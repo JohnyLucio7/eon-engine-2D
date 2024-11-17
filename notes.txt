@@ -1,3 +1,12 @@
-001 - Motivations & Learning Outcomes	|	16:29
-002 - How to Take this Course		|	02:50
-003 - Project Technologies & Libraries	|	22:06
+001 - Motivations & Learning Outcomes	    |	16:29
+002 - How to Take this Course		        |	02:50
+003 - Project Technologies & Libraries	    |	22:06
+004 - Linux Dependencies                    |   06:18
+005 - MacOs Dependencies                    |   02:35
+006 - A Small Note for Windows Programmers  |   03:39 
+007 - Compilation                           |   11:10
+008 - Header & Implementation Files         |   06:13
+009 - Linking                               |   11:38
+010 - Makefile                              |   08:35
+011 - Lua Version & Lua Header Files        |   04:47
+012 - Compiling & Testing All Dependencies  |   15:42
