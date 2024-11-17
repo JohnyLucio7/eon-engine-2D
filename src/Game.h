@@ -47,6 +47,9 @@ public:
     /// @brief Cleans up all game resources
     /// @details Properly destroys SDL window, renderer and quits SDL
     void Destroy();
+
+    int windowWidth;
+    int windowHeight;
 };
 
 #endif /* GAME_H */

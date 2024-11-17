@@ -7,3 +7,4 @@ run:
 clean:
 	rm gameengine
 
+all: build run

@@ -17,3 +17,4 @@
 017 - Creating an SDL Window                |   15:45
 018 - Polling SDL Events                    |   13:40
 019 - Rendering our SDL Window              |   06:50
+020 - Fullscreen Window                     |   08:30
