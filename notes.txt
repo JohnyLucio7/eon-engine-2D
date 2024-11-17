@@ -15,3 +15,5 @@
 015 - Game Loop                             |   08:48
 016 - Game Class                            |   18:05
 017 - Creating an SDL Window                |   15:45
+018 - Polling SDL Events                    |   13:40
+019 - Rendering our SDL Window              |   06:50
