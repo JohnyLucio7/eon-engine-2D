@@ -10,3 +10,7 @@
 010 - Makefile                              |   08:35
 011 - Lua Version & Lua Header Files        |   04:47
 012 - Compiling & Testing All Dependencies  |   15:42
+013 - Configuring Visual Studio on Windows  |   34:22
+014 - Library Binaries                      |   09:32
+015 - Game Loop                             |   08:48
+016 - Game Class                            |   18:05
