@@ -29,3 +29,5 @@ Fold All (1) e Unfold All (2)
 022 - Drawing an SDL Rectangle              |   06:40
 023 - Double-Buffered Renderer              |   02:32
 024 - Loading PNG Textures                  |   10:14
+025 - Object Movement & Velocity Vectors    |   11:05
+026 - Capping the Game Framerate            |   15:19

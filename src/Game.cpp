@@ -5,6 +5,7 @@
 #include "Game.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <glm/glm.hpp>
 #include <iostream>
 
 /// @brief Constructor for the Game class
@@ -112,11 +113,15 @@ void Game::ProcessInput()
     }
 }
 
+glm::vec2 playerPosition;
+glm::vec2 playerVelocity;
+
 /// @brief Initialize all game objects
 /// @details Configure all game objects before the first frame of main game loop
 void Game::Setup()
 {
-    // initialize game objects
+    playerPosition = glm::vec2(10.0, 20.0);
+    playerVelocity = glm::vec2(0.5, 0.0);
 }
 
 /// @brief Updates game state
@@ -124,6 +129,14 @@ void Game::Setup()
 void Game::Update()
 {
     // TODO: Update game objects
+    // TODO: If we are to fast, waste some time until we reach the MILLISECS_PER_FRAME
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), millisecsPreviousFrame + MILLISECS_PER_FRAME));
+
+    // Store the current frame time
+    millisecsPreviousFrame = SDL_GetTicks();
+
+    playerPosition.x += playerVelocity.x;
+    playerPosition.y += playerVelocity.y;
 }
 
 /// @brief Renders the game state
@@ -155,11 +168,14 @@ void Game::Render()
     // <srcRect> Do you want the full texture (NULL) or just part of it (Set a Rect)?
     // <dstRect> This is the destination of our texture in the renderer
     // Copy the texture to thee renderer
-    SDL_Rect dstRect = {10, 10, 32, 32};
+    SDL_Rect dstRect = {
+        static_cast<int>(playerPosition.x),
+        static_cast<int>(playerPosition.y),
+        32,
+        32};
     SDL_RenderCopy(renderer, texture, NULL, &dstRect);
     SDL_DestroyTexture(texture);
     // ---
-
 
     // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs
     SDL_RenderPresent(renderer);
