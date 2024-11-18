@@ -35,3 +35,4 @@ Fold All (1) e Unfold All (2)
 028 - Delta Time                            |   13:26
 029 - Uncapped Framerate                    |   01:43
 030 - Logger Class                          |   12:24
+031 - Logger Class Implementation           |   18:32
