@@ -4,6 +4,7 @@
 
 #include "Game.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 
 /// @brief Constructor for the Game class
@@ -64,7 +65,7 @@ void Game::Initialize()
     }
 
     // set fullscreen window
-    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     isRunning = true;
 }
@@ -129,15 +130,38 @@ void Game::Update()
 /// @details Currently empty, will be implemented with rendering logic
 void Game::Render()
 {
+
+    // Working with Double-Buffered (Back and Front) Renderer
+    // All of this things be render in the back buffer
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
+    // ---
     // TODO: Render all game objects
     // Draw a rectangle
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Rect player = {10, 10, 20, 20};
-    SDL_RenderFillRect(renderer, &player);
+    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // SDL_Rect player = {10, 10, 20, 20};
+    // SDL_RenderFillRect(renderer, &player);
+    // ---
 
+    // ---
+    // Draw a PNG Texture
+    // Load PNG Texture
+    SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    // <srcRect> and <dstRect>
+    // <srcRect> Do you want the full texture (NULL) or just part of it (Set a Rect)?
+    // <dstRect> This is the destination of our texture in the renderer
+    // Copy the texture to thee renderer
+    SDL_Rect dstRect = {10, 10, 32, 32};
+    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
+    SDL_DestroyTexture(texture);
+    // ---
+
+
+    // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs
     SDL_RenderPresent(renderer);
 }
 

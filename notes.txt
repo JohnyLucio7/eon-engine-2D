@@ -1,3 +1,10 @@
+Fold All (1) e Unfold All (2)
+
+1) ctrl+k+ctrl+0
+2) ctrl+k+ctrl+j
+
+-----------------------------------------------------
+
 001 - Motivations & Learning Outcomes	    |	16:29
 002 - How to Take this Course		        |	02:50
 003 - Project Technologies & Libraries	    |	22:06
@@ -20,3 +27,5 @@
 020 - Fullscreen Window                     |   08:30
 021 - Fake Fullscreen vs. Real Fullscreen   |   03:53
 022 - Drawing an SDL Rectangle              |   06:40
+023 - Double-Buffered Renderer              |   02:32
+024 - Loading PNG Textures                  |   10:14
