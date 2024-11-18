@@ -63,7 +63,8 @@ void Game::Initialize()
         return;
     }
 
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    // set fullscreen window
+    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     isRunning = true;
 }
@@ -72,6 +73,8 @@ void Game::Initialize()
 /// @details Runs the core game loop that processes input, updates game state, and renders
 void Game::Run()
 {
+    Setup();
+
     while (isRunning)
     {
         ProcessInput();
@@ -108,6 +111,13 @@ void Game::ProcessInput()
     }
 }
 
+/// @brief Initialize all game objects
+/// @details Configure all game objects before the first frame of main game loop
+void Game::Setup()
+{
+    // initialize game objects
+}
+
 /// @brief Updates game state
 /// @details Currently empty, will be implemented with game logic
 void Game::Update()
@@ -119,10 +129,14 @@ void Game::Update()
 /// @details Currently empty, will be implemented with rendering logic
 void Game::Render()
 {
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
     // TODO: Render all game objects
+    // Draw a rectangle
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_Rect player = {10, 10, 20, 20};
+    SDL_RenderFillRect(renderer, &player);
 
     SDL_RenderPresent(renderer);
 }

@@ -32,6 +32,10 @@ public:
     /// @details Continuously processes input, updates game state, and renders
     void Run();
 
+    /// @brief Initialize the game objects
+    /// @details Called one time before the main game loop
+    void Setup();
+
     /// @brief Processes user input
     /// @details Handles SDL events including window and keyboard input
     void ProcessInput();

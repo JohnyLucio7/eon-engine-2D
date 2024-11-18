@@ -19,3 +19,4 @@
 019 - Rendering our SDL Window              |   06:50
 020 - Fullscreen Window                     |   08:30
 021 - Fake Fullscreen vs. Real Fullscreen   |   03:53
+022 - Drawing an SDL Rectangle              |   06:40
