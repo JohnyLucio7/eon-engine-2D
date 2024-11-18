@@ -36,3 +36,6 @@ Fold All (1) e Unfold All (2)
 029 - Uncapped Framerate                    |   01:43
 030 - Logger Class                          |   12:24
 031 - Logger Class Implementation           |   18:32
+032 - Popular Logging Libraries             |   04:40
+033 - Source Subfolders                     |   15:12
+034 - Makefile Variables                    |   12:26
