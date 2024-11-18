@@ -3,24 +3,24 @@
 /// @author Johny Lúcio Teixeira da Costa
 
 #include "Game.h"
+#include "Logger.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
-#include <iostream>
 
 /// @brief Constructor for the Game class
 /// @details Initializes the game state to not running and logs creation
 Game::Game()
 {
     isRunning = false;
-    std::cout << "Game constructor called!" << std::endl;
+    Logger::Log("Game constructor called!");
 }
 
 /// @brief Destructor for the Game class
 /// @details Ensures proper cleanup and logs destruction
 Game::~Game()
 {
-    std::cout << "Game destructor called!" << std::endl;
+    Logger::Log("Game destructor called!");
 }
 
 /// @brief Initializes the game engine and its core systems
@@ -30,7 +30,7 @@ void Game::Initialize()
     // Attempt to initialize all SDL subsystems
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        std::cerr << "[Error | Class Game | Function 'Initialize()'] - Error initializing SDL!" << std::endl;
+        Logger::Err("[Error | Class Game | Function 'Initialize()'] - Error initializing SDL!");
         return;
     }
 
@@ -52,7 +52,7 @@ void Game::Initialize()
 
     if (!window)
     {
-        std::cerr << "[Error | Class Game | Function 'Initialize()'] - Error Creating SDL window!" << std::endl;
+        Logger::Err("[Error | Class Game | Function 'Initialize()'] - Error Creating SDL window!");
         return;
     }
 
@@ -61,7 +61,7 @@ void Game::Initialize()
 
     if (!renderer)
     {
-        std::cerr << "[Error | Class Game | Function 'Initialize()'] - Error Creating SDL renderer!" << std::endl;
+        Logger::Err("[Error | Class Game | Function 'Initialize()'] - Error Creating SDL renderer!");
         return;
     }
 

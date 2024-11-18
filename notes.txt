@@ -34,3 +34,4 @@ Fold All (1) e Unfold All (2)
 027 - SDL Delay                             |   07:28
 028 - Delta Time                            |   13:26
 029 - Uncapped Framerate                    |   01:43
+030 - Logger Class                          |   12:24
