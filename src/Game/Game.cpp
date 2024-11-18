@@ -3,7 +3,7 @@
 /// @author Johny Lúcio Teixeira da Costa
 
 #include "Game.h"
-#include "Logger.h"
+#include "../Logger/Logger.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
