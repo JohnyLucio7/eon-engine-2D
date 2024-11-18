@@ -32,3 +32,5 @@ Fold All (1) e Unfold All (2)
 025 - Object Movement & Velocity Vectors    |   11:05
 026 - Capping the Game Framerate            |   15:19
 027 - SDL Delay                             |   07:28
+028 - Delta Time                            |   13:26
+029 - Uncapped Framerate                    |   01:43
