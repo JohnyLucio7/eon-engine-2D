@@ -6,7 +6,7 @@ Fold All (1) e Unfold All (2)
 -----------------------------------------------------
 
 001 - Motivations & Learning Outcomes	    |	16:29
-002 - How to Take this Course		        |	02:50
+002 - How to Take this Course               |   02:50
 003 - Project Technologies & Libraries	    |	22:06
 004 - Linux Dependencies                    |   06:18
 005 - MacOs Dependencies                    |   02:35
@@ -39,3 +39,9 @@ Fold All (1) e Unfold All (2)
 032 - Popular Logging Libraries             |   04:40
 033 - Source Subfolders                     |   15:12
 034 - Makefile Variables                    |   12:26
+035 - Creating C++ Objects                  |   15:23
+036 - Examples of C++ Object Creation       |   05:36
+037 - Organizing Game Objects               |   07:50
+038 - Object Inheritance Design             |   05:18
+039 - Component-Based Design                |   16:27
+040 - Entity-Component-System Design        |   22:09
