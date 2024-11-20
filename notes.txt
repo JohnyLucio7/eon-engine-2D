@@ -5,47 +5,49 @@ Fold All (1) e Unfold All (2)
 
 -----------------------------------------------------
 
-001 - Motivations & Learning Outcomes	    |	16:29
-002 - How to Take this Course               |   02:50
-003 - Project Technologies & Libraries	    |	22:06
-004 - Linux Dependencies                    |   06:18
-005 - MacOs Dependencies                    |   02:35
-006 - A Small Note for Windows Programmers  |   03:39 
-007 - Compilation                           |   11:10
-008 - Header & Implementation Files         |   06:13
-009 - Linking                               |   11:38
-010 - Makefile                              |   08:35
-011 - Lua Version & Lua Header Files        |   04:47
-012 - Compiling & Testing All Dependencies  |   15:42
-013 - Configuring Visual Studio on Windows  |   34:22
-014 - Library Binaries                      |   09:32
-015 - Game Loop                             |   08:48
-016 - Game Class                            |   18:05
-017 - Creating an SDL Window                |   15:45
-018 - Polling SDL Events                    |   13:40
-019 - Rendering our SDL Window              |   06:50
-020 - Fullscreen Window                     |   08:30
-021 - Fake Fullscreen vs. Real Fullscreen   |   03:53
-022 - Drawing an SDL Rectangle              |   06:40
-023 - Double-Buffered Renderer              |   02:32
-024 - Loading PNG Textures                  |   10:14
-025 - Object Movement & Velocity Vectors    |   11:05
-026 - Capping the Game Framerate            |   15:19
-027 - SDL Delay                             |   07:28
-028 - Delta Time                            |   13:26
-029 - Uncapped Framerate                    |   01:43
-030 - Logger Class                          |   12:24
-031 - Logger Class Implementation           |   18:32
-032 - Popular Logging Libraries             |   04:40
-033 - Source Subfolders                     |   15:12
-034 - Makefile Variables                    |   12:26
-035 - Creating C++ Objects                  |   15:23
-036 - Examples of C++ Object Creation       |   05:36
-037 - Organizing Game Objects               |   07:50
-038 - Object Inheritance Design             |   05:18
-039 - Component-Based Design                |   16:27
-040 - Entity-Component-System Design        |   22:09
-041 - ECS Folder Structure                  |   21:02
-042 - System Component Signature            |   17:26
-043 - Working with C++ Templates            |   07:58
-044 - Component Type Template               |   10:41
+001 - Motivations & Learning Outcomes	                |	16:29
+002 - How to Take this Course                           |   02:50
+003 - Project Technologies & Libraries	                |	22:06
+004 - Linux Dependencies                                |   06:18
+005 - MacOs Dependencies                                |   02:35
+006 - A Small Note for Windows Programmers              |   03:39 
+007 - Compilation                                       |   11:10
+008 - Header & Implementation Files                     |   06:13
+009 - Linking                                           |   11:38
+010 - Makefile                                          |   08:35
+011 - Lua Version & Lua Header Files                    |   04:47
+012 - Compiling & Testing All Dependencies              |   15:42
+013 - Configuring Visual Studio on Windows              |   34:22
+014 - Library Binaries                                  |   09:32
+015 - Game Loop                                         |   08:48
+016 - Game Class                                        |   18:05
+017 - Creating an SDL Window                            |   15:45
+018 - Polling SDL Events                                |   13:40
+019 - Rendering our SDL Window                          |   06:50
+020 - Fullscreen Window                                 |   08:30
+021 - Fake Fullscreen vs. Real Fullscreen               |   03:53
+022 - Drawing an SDL Rectangle                          |   06:40
+023 - Double-Buffered Renderer                          |   02:32
+024 - Loading PNG Textures                              |   10:14
+025 - Object Movement & Velocity Vectors                |   11:05
+026 - Capping the Game Framerate                        |   15:19
+027 - SDL Delay                                         |   07:28
+028 - Delta Time                                        |   13:26
+029 - Uncapped Framerate                                |   01:43
+030 - Logger Class                                      |   12:24
+031 - Logger Class Implementation                       |   18:32
+032 - Popular Logging Libraries                         |   04:40
+033 - Source Subfolders                                 |   15:12
+034 - Makefile Variables                                |   12:26
+035 - Creating C++ Objects                              |   15:23
+036 - Examples of C++ Object Creation                   |   05:36
+037 - Organizing Game Objects                           |   07:50
+038 - Object Inheritance Design                         |   05:18
+039 - Component-Based Design                            |   16:27
+040 - Entity-Component-System Design                    |   22:09
+041 - ECS Folder Structure                              |   21:02
+042 - System Component Signature                        |   17:26
+043 - Working with C++ Templates                        |   07:58
+044 - Component Type Template                           |   10:41
+045 - Exercise System Functions                         |   06:15
+046 - Adding & Removing Entities from Systems           |   08:13

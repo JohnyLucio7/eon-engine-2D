@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include <vector>
+#include <algorithm>
 
 /// @brief Constant defining the maximum number of supported components
 const unsigned int MAX_COMPONENTS = 32;
@@ -71,7 +72,7 @@ public:
 
     /// @brief Gets the component signature of the system
     /// @return Reference to the component signature
-    Signature &GetComponentSignature() const;
+    const Signature &GetComponentSignature() const;
 
     /// @brief Defines which component types are required for an entity
     /// to be processed by this system
