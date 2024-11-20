@@ -45,3 +45,6 @@ Fold All (1) e Unfold All (2)
 038 - Object Inheritance Design             |   05:18
 039 - Component-Based Design                |   16:27
 040 - Entity-Component-System Design        |   22:09
+041 - ECS Folder Structure                  |   21:02
+042 - System Component Signature            |   17:26
+043 - Working with C++ Templates            |   07:58

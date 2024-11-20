@@ -4,6 +4,7 @@
 
 #include "Game.h"
 #include "../Logger/Logger.h"
+#include "../ECS/ECS.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -113,15 +114,15 @@ void Game::ProcessInput()
     }
 }
 
-glm::vec2 playerPosition;
-glm::vec2 playerVelocity;
-
 /// @brief Initialize all game objects
 /// @details Configure all game objects before the first frame of main game loop
 void Game::Setup()
 {
-    playerPosition = glm::vec2(10.0, 20.0);
-    playerVelocity = glm::vec2(100.0, 0.0);
+    // Todo:
+    // Entity tank = registry.CreateEntity();
+    // tank.AddComponent<TransformComponent>();
+    // tank.AddComponent<BoxColliderComponent>();
+    // tank.AddComponent<SpriteComponent>("./assets/images/tank.png");
 }
 
 /// @brief Updates game state
@@ -144,47 +145,22 @@ void Game::Update()
     // Store the current frame time
     millisecsPreviousFrame = SDL_GetTicks();
 
-    playerPosition.x += playerVelocity.x * deltaTime;
-    playerPosition.y += playerVelocity.y * deltaTime;
+   // Todo:
+   // MovementSystem.Update();
+   // CollisionSystem.Update();
+   // DamageSystem.Update();
 }
 
 /// @brief Renders the game state
 /// @details Currently empty, will be implemented with rendering logic
 void Game::Render()
 {
-
     // Working with Double-Buffered (Back and Front) Renderer
     // All of this things be render in the back buffer
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
-    // ---
-    // TODO: Render all game objects
-    // Draw a rectangle
-    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    // SDL_Rect player = {10, 10, 20, 20};
-    // SDL_RenderFillRect(renderer, &player);
-    // ---
-
-    // ---
-    // Draw a PNG Texture
-    // Load PNG Texture
-    SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    // <srcRect> and <dstRect>
-    // <srcRect> Do you want the full texture (NULL) or just part of it (Set a Rect)?
-    // <dstRect> This is the destination of our texture in the renderer
-    // Copy the texture to thee renderer
-    SDL_Rect dstRect = {
-        static_cast<int>(playerPosition.x),
-        static_cast<int>(playerPosition.y),
-        32,
-        32};
-    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-    SDL_DestroyTexture(texture);
-    // ---
+    // Todo: Render game objects...
 
     // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs
     SDL_RenderPresent(renderer);
