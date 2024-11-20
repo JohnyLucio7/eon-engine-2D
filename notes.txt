@@ -48,3 +48,4 @@ Fold All (1) e Unfold All (2)
 041 - ECS Folder Structure                  |   21:02
 042 - System Component Signature            |   17:26
 043 - Working with C++ Templates            |   07:58
+044 - Component Type Template               |   10:41
