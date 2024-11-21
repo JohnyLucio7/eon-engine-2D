@@ -3,7 +3,8 @@
 
 #include <bitset>
 #include <vector>
-#include <algorithm>
+#include <unordered_map>
+#include <typeindex>
 
 /// @brief Constant defining the maximum number of supported components
 const unsigned int MAX_COMPONENTS = 32;
@@ -160,9 +161,32 @@ private:
     int numEntities = 0;
 
     // Vector of component pools, each pool contains all the data for a certain component type
-    // Vector index = component type id
-    // Pool index = entity id
+    // [Vector index = component type id]
+    // [Pool index = entity id]
     std::vector<IPool *> componentPools;
+
+    // Vector of component signatures per entity, saying which component is turned "on" for a given entity
+    // [Vector index = entity id]
+    std::vector<Signature> entityComponentSignatures;
+
+    std::unordered_map<std::type_index, System *> systems;
+
+public:
+    Registry() = default;
+
+    // Todo:
+    //  CreateEntity
+    //  KillEntity
+    //
+    //  AddComponent(Entity entity)
+    //  RemoveComponent(Entity entity)
+    //  HasComponent(Entity entity)
+    //  GetComponent(Entity entity)
+    //
+    //  AddSystem();
+    //  RemoveSystem();
+    //  HasSystem();
+    //  GetSystem();
 };
 
 /// @brief Implementation of the RequireComponent method
