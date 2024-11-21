@@ -51,3 +51,4 @@ Fold All (1) e Unfold All (2)
 044 - Component Type Template                           |   10:41
 045 - Exercise System Functions                         |   06:15
 046 - Adding & Removing Entities from Systems           |   08:13
+047 - Operator Overloading for Entities                 |   10:40
