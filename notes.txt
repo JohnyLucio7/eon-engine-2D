@@ -52,3 +52,6 @@ Fold All (1) e Unfold All (2)
 045 - Exercise System Functions                         |   06:15
 046 - Adding & Removing Entities from Systems           |   08:13
 047 - Operator Overloading for Entities                 |   10:40
+048 - Component Pool                                    |   11:31
+049 - The Pool Class                                    |   07:17
+050 - Implementing the Pool Class                       |   13:45
