@@ -227,6 +227,26 @@ public:
     template <typename TComponent, typename... TArgs>
     void AddComponent(Entity entity, TArgs &&...args);
 
+    /// @brief Removes a component from an entity
+    /// @tparam TComponent Type of component to be removed from the entity
+    /// @param entity Pointer to the entity from which to remove the component
+    /// @details This method updates the entity's component signature by setting the corresponding
+    /// component bit to false, effectively marking that component as no longer present on the entity.
+    /// Note that this only updates the signature and does not actually delete the component data
+    /// from the pool - the data slot is simply marked as available for reuse.
+    template <typename TComponent>
+    void RemoveComponent(Entity entity);
+
+    /// @brief Checks if an entity has a specific component
+    /// @tparam TComponent Type of component to check for
+    /// @param entity Pointer to the entity to check
+    /// @return true if the entity has the component, false otherwise
+    /// @details Uses the entity's component signature to efficiently check for the presence
+    /// of a component without actually accessing the component pool. This is done by testing
+    /// the bit corresponding to the component type in the entity's signature.
+    template <typename TComponent>
+    bool HasComponent(Entity entity) const;
+
     // TODO: Implement the following methods:
     // - KillEntity: Remove an entity from the system
     // - RemoveComponent: Remove a specific component from an entity
@@ -287,6 +307,34 @@ void Registry::AddComponent(Entity entity, TArgs &&...args)
 
     // Update the entity's component signature
     entityComponentSignatures[entityId].set(componentId);
+}
+
+/// @brief Implementation of RemoveComponent
+/// @tparam TComponent The type of component to remove
+/// @param entity Pointer to the entity from which to remove the component
+template <typename TComponent>
+void Registry::RemoveComponent(Entity entity)
+{
+    const auto componentId = Component<TComponent>::GetId();
+    const auto entityId = entity.GetId();
+
+    // Update the entity's signature to indicate it no longer has this component
+    // The second parameter 'false' explicitly sets the bit to 0
+    entityComponentSignatures[entityId].set(componentId, false);
+}
+
+/// @brief Implementation of HasComponent
+/// @tparam TComponent The type of component to check for
+/// @param entity Pointer to the entity to check
+/// @return Boolean indicating whether the entity has the component
+template <typename TComponent>
+bool Registry::HasComponent(Entity entity) const
+{
+    const auto componentId = Component<TComponent>::GetId();
+    const auto entityId = entity.GetId();
+
+    // Test if the bit corresponding to this component type is set in the entity's signature
+    return entityComponentSignature[entityId].test(componentId);
 }
 
 #endif /** ECS_H */
