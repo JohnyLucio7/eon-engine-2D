@@ -1,4 +1,5 @@
 #include "ECS.h"
+#include "../Logger/Logger.h"
 
 #include <algorithm>
 
@@ -31,4 +32,25 @@ std::vector<Entity> System::GetSystemEntities() const
 const Signature &System::GetComponentSignature() const
 {
     return componentSignature;
+}
+
+Entity Registry::CreateEntity()
+{
+    int entityId;
+
+    entityId = numEntities++;
+
+    Entity entity(entityId);
+
+    entitiesToBeAdd.insert(entity);
+
+    Logger::Log("Entity created with id = " + std::to_string(entityId));
+
+    return entity;
+}
+
+void Registry::Update()
+{
+    // Todo: Add the entities that are waiting to be created to the active Systems
+    // Todo: Remove the entities that are waiting to be killed from the active Systems
 }

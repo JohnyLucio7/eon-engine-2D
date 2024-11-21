@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include <vector>
+#include <set>
 #include <unordered_map>
 #include <typeindex>
 
@@ -171,11 +172,21 @@ private:
 
     std::unordered_map<std::type_index, System *> systems;
 
+    // Set of entities that are flagged to be added or removed in the next registry update()
+    std::set<Entity> entitiesToBeAdd;
+    std::set<Entity> entitiesToBeKilled;
+
 public:
     Registry() = default;
 
+    void Update();
+
+    Entity CreateEntity();
+
+    void AddEntityToSystem(Entity entity);
+
+    
     // Todo:
-    //  CreateEntity
     //  KillEntity
     //
     //  AddComponent(Entity entity)

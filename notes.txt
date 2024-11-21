@@ -56,3 +56,4 @@ Fold All (1) e Unfold All (2)
 049 - The Pool Class                                    |   07:17
 050 - Implementing the Pool Class                       |   13:45
 051 - Registry Systems & Entity Signatures              |   10:54
+052 - Entity Creation & Management                      |   17:54
