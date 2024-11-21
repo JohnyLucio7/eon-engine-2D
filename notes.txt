@@ -57,3 +57,6 @@ Fold All (1) e Unfold All (2)
 050 - Implementing the Pool Class                       |   13:45
 051 - Registry Systems & Entity Signatures              |   10:54
 052 - Entity Creation & Management                      |   17:54
+053 - Function Templates to Manage Components           |   12:00
+054 - Adding Components                                 |   17:54
+055 - Function to Add Components                        |   18:23

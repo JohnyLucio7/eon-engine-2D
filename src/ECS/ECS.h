@@ -91,21 +91,27 @@ public:
     void RequireComponent();
 };
 
+/// @brief Interface for component pools
+/// Allows for type-safe component storage and retrieval
 class IPool
 {
 public:
     virtual ~IPool() {}
 };
 
-/// @brief A pool is just a vector (contiguous data) od objects of type T
-/// @tparam T
+/// @brief Type-safe pool for storing components of a specific type
+/// Provides contiguous memory storage for better cache performance
+/// @tparam T Component type stored in this pool
 template <typename T>
 class Pool : public IPool
 {
 private:
+    /// @brief Vector storing the actual component data
     std::vector<T> data;
 
 public:
+    /// @brief Constructor that pre-allocates space for components
+    /// @param size Initial size of the pool
     Pool(int size = 100)
     {
         data.resize(size);
@@ -113,41 +119,59 @@ public:
 
     virtual ~Pool() = default;
 
+    /// @brief Checks if the pool is empty
+    /// @return True if pool contains no elements
     bool isEmpty() const
     {
         return data.empty();
     }
 
+    /// @brief Gets the current size of the pool
+    /// @return Number of elements the pool can hold
     int GetSize() const
     {
         return data.size();
     }
 
+    /// @brief Resizes the pool to hold a specific number of elements
+    /// @param n New size for the pool
     void Resize(int n)
     {
         data.resize(n);
     }
 
+    /// @brief Removes all elements from the pool
     void Clear()
     {
         data.clear();
     }
 
+    /// @brief Adds a new object to the pool
+    /// @param object Object to be added
     vod Add(T object)
     {
         data.push_back(object);
     }
 
+    /// @brief Sets an object at a specific index in the pool
+    /// @param index Position where to set the object
+    /// @param object Object to be set
     void Set(int index, T object)
     {
         data[index] = object;
     }
 
+    /// @brief Gets an object from a specific index in the pool
+    /// @param index Position of the object to retrieve
+    /// @return Reference to the requested object
     T &Get(int index)
     {
         return static_cast<T &>(data[index]);
     }
 
+    /// @brief Array access operator
+    /// @param index Position of the object to retrieve
+    /// @return Reference to the requested object
     T &operator[](unsigned int index)
     {
         return data[index];
@@ -159,6 +183,7 @@ public:
 class Registry
 {
 private:
+    /// @brief Counter for the number of entities created
     int numEntities = 0;
 
     // Vector of component pools, each pool contains all the data for a certain component type
@@ -170,34 +195,47 @@ private:
     // [Vector index = entity id]
     std::vector<Signature> entityComponentSignatures;
 
+    /// @brief Map of systems indexed by their type
+    /// Stores all registered systems in the ECS
     std::unordered_map<std::type_index, System *> systems;
 
-    // Set of entities that are flagged to be added or removed in the next registry update()
+    /// @brief Sets of entities pending addition or removal
+    /// Used to manage entity lifecycle during updates
     std::set<Entity> entitiesToBeAdd;
     std::set<Entity> entitiesToBeKilled;
 
 public:
     Registry() = default;
 
+    /// @brief Updates the registry state
+    /// Processes pending entity additions and removals
     void Update();
 
+    /// @brief Creates a new entity in the system
+    /// @return Newly created entity
     Entity CreateEntity();
 
+    /// @brief Adds an entity to appropriate systems based on its components
+    /// @param entity Entity to be processed
     void AddEntityToSystem(Entity entity);
 
-    
-    // Todo:
-    //  KillEntity
-    //
-    //  AddComponent(Entity entity)
-    //  RemoveComponent(Entity entity)
-    //  HasComponent(Entity entity)
-    //  GetComponent(Entity entity)
-    //
-    //  AddSystem();
-    //  RemoveSystem();
-    //  HasSystem();
-    //  GetSystem();
+    /// @brief Adds a component to an entity
+    /// @tparam TComponent Type of component to add
+    /// @tparam TArgs Types of arguments for component construction
+    /// @param entity Entity to receive the component
+    /// @param args Arguments for component construction
+    template <typename TComponent, typename... TArgs>
+    void AddComponent(Entity entity, TArgs &&...args);
+
+    // TODO: Implement the following methods:
+    // - KillEntity: Remove an entity from the system
+    // - RemoveComponent: Remove a specific component from an entity
+    // - HasComponent: Check if an entity has a specific component
+    // - GetComponent: Retrieve a component from an entity
+    // - AddSystem: Register a new system
+    // - RemoveSystem: Unregister a system
+    // - HasSystem: Check if a system is registered
+    // - GetSystem: Retrieve a registered system
 };
 
 /// @brief Implementation of the RequireComponent method
@@ -208,6 +246,47 @@ void System::RequireComponent()
 {
     const auto componentId = Component<TComponent>::GetId();
     componentSignature.set(componentId);
+}
+
+/// @brief Implementation of AddComponent method
+/// Adds a component of type TComponent to the specified entity
+/// @tparam TComponent Type of component to add
+/// @tparam TArgs Types of arguments for component construction
+/// @param entity Entity to receive the component
+/// @param args Arguments for component construction
+template <typename TComponent, typename... TArgs>
+void Registry::AddComponent(Entity entity, TArgs &&...args)
+{
+    const auto componentId = Component<TComponent>::GetId();
+    const auto entityId = entity.GetId();
+
+    // Resize component pools if necessary
+    if (componentId >= componentPools.size())
+    {
+        componentPools.resize(componentId + 1, nullptr);
+    }
+
+    // Create new pool for this component type if it doesn't exist
+    if (!componentPools[componentId])
+    {
+        Pool<TComponent> *newComponentPool = new Pool<TComponent>();
+        componentPools[componentId] = newComponentPool;
+    }
+
+    Pool<TComponent> *componentPool = componentPools[componentId];
+
+    // Resize the pool if necessary to accommodate the new entity
+    if (entityId >= componentPool->GetSize())
+    {
+        componentPool->Resize(numEntities);
+    }
+
+    // Create and add the new component
+    TComponent newComponent(std::forward<TArgs>(args)...);
+    componentPool->Set(entityId, newComponent);
+
+    // Update the entity's component signature
+    entityComponentSignatures[entityId].set(componentId);
 }
 
 #endif /** ECS_H */
