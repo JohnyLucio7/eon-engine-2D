@@ -1,11 +1,14 @@
 #ifndef ECS_H
 #define ECS_H
 
+#include "../Logger/Logger.h"
+
 #include <bitset>
 #include <vector>
 #include <set>
 #include <unordered_map>
 #include <typeindex>
+#include <memory>
 
 /// @brief Constant defining the maximum number of supported components
 const unsigned int MAX_COMPONENTS = 32;
@@ -189,7 +192,7 @@ private:
     // Vector of component pools, each pool contains all the data for a certain component type
     // [Vector index = component type id]
     // [Pool index = entity id]
-    std::vector<IPool *> componentPools;
+    std::vector<std::shared_ptr<IPool>> componentPools;
 
     // Vector of component signatures per entity, saying which component is turned "on" for a given entity
     // [Vector index = entity id]
@@ -197,7 +200,7 @@ private:
 
     /// @brief Map of systems indexed by their type
     /// Stores all registered systems in the ECS
-    std::unordered_map<std::type_index, System *> systems;
+    std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
     /// @brief Sets of entities pending addition or removal
     /// Used to manage entity lifecycle during updates
@@ -205,7 +208,15 @@ private:
     std::set<Entity> entitiesToBeKilled;
 
 public:
-    Registry() = default;
+    Registry()
+    {
+        Logger::Log("Registry constructor called!");
+    }
+
+    ~Registry()
+    {
+        Logger::Log("Registry destructor called!");
+    }
 
     /// @brief Updates the registry state
     /// Processes pending entity additions and removals
@@ -296,11 +307,11 @@ void Registry::AddComponent(Entity entity, TArgs &&...args)
     // Create new pool for this component type if it doesn't exist
     if (!componentPools[componentId])
     {
-        Pool<TComponent> *newComponentPool = new Pool<TComponent>();
+        std::shared_ptr<Pool<TComponent>> newComponentPool = std::make_shared<Pool<TComponent>>();
         componentPools[componentId] = newComponentPool;
     }
 
-    Pool<TComponent> *componentPool = componentPools[componentId];
+    std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
 
     // Resize the pool if necessary to accommodate the new entity
     if (entityId >= componentPool->GetSize())
@@ -351,7 +362,7 @@ bool Registry::HasComponent(Entity entity) const
 template <typename TSystem, typename... TArgs>
 void Registry::AddSystem(TArgs &&...args)
 {
-    TSystem *newSystem(new TSystem(std::forward<TArgs>(args)...));
+    std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
 
     systems.insert(
         std::make_pair(

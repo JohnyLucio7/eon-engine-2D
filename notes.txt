@@ -64,3 +64,5 @@ Fold All (1) e Unfold All (2)
 057 - Templates as Placeholders                         |   07:54
 058 - Implementing System Functions                     |   29:40
 059 - Creating our First Entity                         |   11:21
+060 - Smart Pointers                                    |   14:57
+061 - Converting ECS Code to Smart Pointers             |   11:44
