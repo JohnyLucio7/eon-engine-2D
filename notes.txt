@@ -3,7 +3,7 @@ Fold All (1) e Unfold All (2)
 1) ctrl+k+ctrl+0
 2) ctrl+k+ctrl+j
 
------------------------------------------------------
+-----------------------------------------------------------------
 
 001 - Motivations & Learning Outcomes	                |	16:29
 002 - How to Take this Course                           |   02:50
@@ -37,7 +37,7 @@ Fold All (1) e Unfold All (2)
 030 - Logger Class                                      |   12:24
 031 - Logger Class Implementation                       |   18:32
 032 - Popular Logging Libraries                         |   04:40
-033 - Source Subfolders                                 |   15:12
+033 - Source Sub-folders                                |   15:12
 034 - Makefile Variables                                |   12:26
 035 - Creating C++ Objects                              |   15:23
 036 - Examples of C++ Object Creation                   |   05:36
@@ -62,3 +62,4 @@ Fold All (1) e Unfold All (2)
 055 - Function to Add Components                        |   18:23
 056 - Function to Remove Components                     |   07:10
 057 - Templates as Placeholders                         |   07:54
+058 - Implementing System Functions                     |   29:40

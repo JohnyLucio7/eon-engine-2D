@@ -166,7 +166,7 @@ public:
     /// @return Reference to the requested object
     T &Get(int index)
     {
-        return static_cast<T &>(data[index]);
+        return std::static_cast<T &>(data[index]);
     }
 
     /// @brief Array access operator
@@ -215,9 +215,10 @@ public:
     /// @return Newly created entity
     Entity CreateEntity();
 
-    /// @brief Adds an entity to appropriate systems based on its components
+    /// @brief Check the component signature of a entity and add the entity to the systems
+    /// that are interested in it
     /// @param entity Entity to be processed
-    void AddEntityToSystem(Entity entity);
+    void AddEntityToSystems(Entity entity);
 
     /// @brief Adds a component to an entity
     /// @tparam TComponent Type of component to add
@@ -247,15 +248,21 @@ public:
     template <typename TComponent>
     bool HasComponent(Entity entity) const;
 
+    template <typename TSystem, typename... TArgs>
+    void AddSystem(TArgs &&...args);
+
+    template <typename TSystem>
+    void RemoveSystem();
+
+    template <typename TSystem>
+    bool HasSystem() const;
+
+    template <typename TSystem>
+    TSystem &GetSystem() const;
+
     // TODO: Implement the following methods:
     // - KillEntity: Remove an entity from the system
-    // - RemoveComponent: Remove a specific component from an entity
-    // - HasComponent: Check if an entity has a specific component
     // - GetComponent: Retrieve a component from an entity
-    // - AddSystem: Register a new system
-    // - RemoveSystem: Unregister a system
-    // - HasSystem: Check if a system is registered
-    // - GetSystem: Retrieve a registered system
 };
 
 /// @brief Implementation of the RequireComponent method
@@ -335,6 +342,50 @@ bool Registry::HasComponent(Entity entity) const
 
     // Test if the bit corresponding to this component type is set in the entity's signature
     return entityComponentSignature[entityId].test(componentId);
+}
+
+/// @brief Adds a system to the registry
+/// @tparam TSystem Type of system to add
+/// @tparam TArgs System constructor argument types
+/// @param args System constructor arguments
+template <typename TSystem, typename... TArgs>
+void Registry::AddSystem(TArgs &&...args)
+{
+    TSystem *newSystem(new TSystem(std::forward<TArgs>(args)...));
+
+    systems.insert(
+        std::make_pair(
+            std::type_index(typeid(TSystem)),
+            newSystem));
+}
+
+/// @brief Removes a system from the registry
+/// @tparam TSystem Type of system to remove
+template <typename TSystem>
+void Registry::RemoveSystem()
+{
+    auto system = systems.find(std::type_index(typeid(TSystem)));
+    systems.erase(system);
+}
+
+/// @brief Checks if a system exists in the registry
+/// @tparam TSystem Type of system to check for
+/// @return True if system exists
+template <typename TSystem>
+bool Registry::HasSystem() const
+{
+    return systems.find(std::type_index(typeid(TSystem))) != systems.end();
+}
+
+/// @brief Gets a reference to a system
+/// @tparam TSystem Type of system to retrieve
+/// @return Reference to the requested system
+template <typename TSystem>
+TSystem &Registry::GetSystem() const
+{
+    auto system = systems.find(std::type_index(typeid(TSystem)));
+
+    return *(std::static_cast<TSystem>(system->second));
 }
 
 #endif /** ECS_H */

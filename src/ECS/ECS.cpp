@@ -3,18 +3,30 @@
 
 #include <algorithm>
 
+/// @brief Initialize the static component ID counter
 int IComponent::nextId = 0;
 
+/// @brief Gets the unique identifier of this entity
+/// @return The entity's ID
+/// @details Simple getter that provides access to the private id field
 int Entity::GetId() const
 {
     return id;
 }
 
+/// @brief Adds an entity to this system's processing list
+/// @param entity Pointer to the entity to be added
+/// @details Adds the entity to the vector of entities this system processes.
+/// The entity should already have been verified to have the required components.
 void System::AddEntityToSystem(Entity entity)
 {
     entities.push_back(entity);
 }
 
+/// @brief Removes an entity from this system's processing list
+/// @param entity Pointer to the entity to be removed
+/// @details Uses the erase-remove idiom to efficiently remove the entity from
+/// the vector. The lambda comparison ensures we remove the correct entity by ID.
 void System::RemoveEntityFromSystem(Entity entity)
 {
     entities.erase(
@@ -26,16 +38,31 @@ void System::RemoveEntityFromSystem(Entity entity)
         entities.end());
 }
 
+/// @brief Gets all entities currently being processed by this system
+/// @return Vector containing all entities in this system
+/// @details Returns a copy of the entities vector to prevent external modification
 std::vector<Entity> System::GetSystemEntities() const
 {
     return entities;
 }
 
+/// @brief Gets this system's component requirements
+/// @return Const reference to the system's component signature
+/// @details Returns the signature that specifies which components an entity
+/// must have for this system to process it
 const Signature &System::GetComponentSignature() const
 {
     return componentSignature;
 }
 
+/// @brief Creates a new entity in the ECS
+/// @return The newly created entity
+/// @details
+/// - Generates a new unique ID for the entity
+/// - Creates an Entity object with this ID
+/// - Adds the entity to the pending entities list
+/// - Logs the creation for debugging
+/// - Returns the new entity to the caller
 Entity Registry::CreateEntity()
 {
     int entityId;
@@ -51,6 +78,45 @@ Entity Registry::CreateEntity()
     return entity;
 }
 
+/// @brief Updates which systems should process an entity
+/// @param entity Pointer to the entity to check
+/// @details
+/// - Gets the entity's current component signature
+/// - Iterates through all registered systems
+/// - For each system:
+///   - Compares the entity's components with the system's requirements
+///   - If the entity has all required components, adds it to that system
+/// - The bitwise AND operation checks if all required components are present
+void Registry::AddEntityToSystems(Entity entity)
+{
+    const auto entityId = entity.GetId();
+
+    const auto &entityComponentSignature = entityComponentSignatures[entityId];
+
+    // Loop all the systems
+    for (auto &system : systems)
+    {
+        const auto &systemComponentSignature = system.second->GetComponentSignature();
+
+        bool isInterested = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
+
+        if (isInterested)
+        {
+            system.second->AddEntityToSystem(entity);
+        }
+    }
+}
+
+/// @brief Processes pending entity changes
+/// @details This method should:
+/// 1. Process entities in entitiesToBeAdd:
+///    - Initialize their data structures
+///    - Add them to relevant systems
+/// 2. Process entities in entitiesToBeKilled:
+///    - Remove them from all systems
+///    - Clean up their components
+///    - Free their IDs for reuse
+/// @note Currently unimplemented - marked as TODO
 void Registry::Update()
 {
     // Todo: Add the entities that are waiting to be created to the active Systems
