@@ -5,6 +5,8 @@
 #include "Game.h"
 #include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidbodyComponent.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -119,9 +121,17 @@ void Game::ProcessInput()
 /// @details Configure all game objects before the first frame of main game loop
 void Game::Setup()
 {
-    // Todo: Create some entities
+    // Create an entity
     Entity tank = registry->CreateEntity();
-    Entity truck = registry->CreateEntity();
+
+    // Add some components to that entity
+    // registry->AddComponent<TransformComponent>(tank, glm::vec2(10, 20), glm::vec2(1, 1), 0.0);
+    // registry->AddComponent<RigidbodyComponent>(tank, glm::vec2(50, 0));
+    tank.AddComponent<TransformComponent>(glm::vec2(10, 20), glm::vec2(1, 1), 0.0);
+    tank.AddComponent<RigidbodyComponent>(glm::vec2(50, 0));
+
+    // remove a component from the entity
+    tank.RemoveComponent<TransformComponent>();
 }
 
 /// @brief Updates game state

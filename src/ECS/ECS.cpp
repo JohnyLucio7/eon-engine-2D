@@ -65,11 +65,13 @@ const Signature &System::GetComponentSignature() const
 /// - Returns the new entity to the caller
 Entity Registry::CreateEntity()
 {
-    int entityId;
+    long unsigned int entityId;
 
     entityId = numEntities++;
 
     Entity entity(entityId);
+
+    entity.registry = this;
 
     entitiesToBeAdd.insert(entity);
 

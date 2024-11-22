@@ -66,3 +66,7 @@ Fold All (1) e Unfold All (2)
 059 - Creating our First Entity                         |   11:21
 060 - Smart Pointers                                    |   14:57
 061 - Converting ECS Code to Smart Pointers             |   11:44
+062 - SDL Raw Pointers                                  |   03:33
+063 - Adding our First Components                       |   10:05
+064 - Exercise Entity Class Managing Components         |   17:49
+065 - Entity Class Managing Components                  |   07:25

@@ -30,6 +30,7 @@ protected:
 template <typename T>
 class Component : public IComponent
 {
+public:
     /// @brief Gets a unique ID for component type T
     /// @return Unique component ID
     static int GetId()
@@ -57,6 +58,18 @@ public:
     bool operator!=(const Entity &other) const { return id != other.id; }
     bool operator>(const Entity &other) const { return id > other.id; }
     bool operator<(const Entity &other) const { return id < other.id; }
+
+    template <typename TComponent, typename... TArgs>
+    void AddComponent(TArgs &&...args);
+
+    template <typename TComponent>
+    void RemoveComponent();
+    template <typename TComponent>
+    bool HasComponent() const;
+    template <typename TComponent>
+    TComponent &GetComponent() const;
+
+    class Registry *registry;
 };
 
 /// @brief System that processes entities with a specific component signature
@@ -259,6 +272,9 @@ public:
     template <typename TComponent>
     bool HasComponent(Entity entity) const;
 
+    template <typename TComponent>
+    TComponent &GetComponent(Entity entity) const;
+
     template <typename TSystem, typename... TArgs>
     void AddSystem(TArgs &&...args);
 
@@ -299,7 +315,7 @@ void Registry::AddComponent(Entity entity, TArgs &&...args)
     const auto entityId = entity.GetId();
 
     // Resize component pools if necessary
-    if (componentId >= componentPools.size())
+    if ((long unsigned int)componentId >= componentPools.size())
     {
         componentPools.resize(componentId + 1, nullptr);
     }
@@ -325,6 +341,8 @@ void Registry::AddComponent(Entity entity, TArgs &&...args)
 
     // Update the entity's component signature
     entityComponentSignatures[entityId].set(componentId);
+
+    Logger::Log("Component id = " + std::to_string(componentId) + " was added to entity id " + std::to_string(entityId));
 }
 
 /// @brief Implementation of RemoveComponent
@@ -339,6 +357,8 @@ void Registry::RemoveComponent(Entity entity)
     // Update the entity's signature to indicate it no longer has this component
     // The second parameter 'false' explicitly sets the bit to 0
     entityComponentSignatures[entityId].set(componentId, false);
+
+    Logger::Log("Component id = " + std::to_string(componentId) + " was removed from entity id " + std::to_string(entityId));
 }
 
 /// @brief Implementation of HasComponent
@@ -353,6 +373,18 @@ bool Registry::HasComponent(Entity entity) const
 
     // Test if the bit corresponding to this component type is set in the entity's signature
     return entityComponentSignatures[entityId].test(componentId);
+}
+
+template <typename TComponent>
+TComponent &Registry::GetComponent(Entity entity) const
+{
+    const auto componentId = Component<TComponent>::GetId();
+
+    const auto entityId = entity.GetId();
+
+    auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
+
+    return componentPool->Get(entityId);
 }
 
 /// @brief Adds a system to the registry
@@ -397,6 +429,30 @@ TSystem &Registry::GetSystem() const
     auto system = systems.find(std::type_index(typeid(TSystem)));
 
     return *(static_cast<TSystem>(system->second));
+}
+
+template <typename TComponent, typename... TArgs>
+void Entity::AddComponent(TArgs &&...args)
+{
+    registry->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
+}
+
+template <typename TComponent>
+void Entity::RemoveComponent()
+{
+    registry->RemoveComponent<TComponent>(*this);
+}
+
+template <typename TComponent>
+bool Entity::HasComponent() const
+{
+    return registry->HasComponent<TComponent>(*this);
+}
+
+template <typename TComponent>
+TComponent &Entity::GetComponent() const
+{
+    return registry->GetComponent<TComponent>(*this);
 }
 
 #endif /** ECS_H */
