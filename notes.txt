@@ -63,3 +63,4 @@ Fold All (1) e Unfold All (2)
 056 - Function to Remove Components                     |   07:10
 057 - Templates as Placeholders                         |   07:54
 058 - Implementing System Functions                     |   29:40
+059 - Creating our First Entity                         |   11:21

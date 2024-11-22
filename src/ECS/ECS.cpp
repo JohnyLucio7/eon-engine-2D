@@ -73,6 +73,13 @@ Entity Registry::CreateEntity()
 
     entitiesToBeAdd.insert(entity);
 
+    // Make sure the entityComponentSignature vector can accommodate the new entity
+
+    if (entityId >= entityComponentSignatures.size())
+    {
+        entityComponentSignatures.resize(entityId + 1);
+    }
+
     Logger::Log("Entity created with id = " + std::to_string(entityId));
 
     return entity;
@@ -119,6 +126,13 @@ void Registry::AddEntityToSystems(Entity entity)
 /// @note Currently unimplemented - marked as TODO
 void Registry::Update()
 {
-    // Todo: Add the entities that are waiting to be created to the active Systems
+    // Add the entities that are waiting to be created to the active Systems
+    for (auto entity : entitiesToBeAdd)
+    {
+        AddEntityToSystems(entity);
+    }
+
+    entitiesToBeAdd.clear();
+
     // Todo: Remove the entities that are waiting to be killed from the active Systems
 }

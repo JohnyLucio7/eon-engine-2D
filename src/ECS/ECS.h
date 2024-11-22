@@ -148,7 +148,7 @@ public:
 
     /// @brief Adds a new object to the pool
     /// @param object Object to be added
-    vod Add(T object)
+    void Add(T object)
     {
         data.push_back(object);
     }
@@ -166,7 +166,7 @@ public:
     /// @return Reference to the requested object
     T &Get(int index)
     {
-        return std::static_cast<T &>(data[index]);
+        return static_cast<T &>(data[index]);
     }
 
     /// @brief Array access operator
@@ -341,7 +341,7 @@ bool Registry::HasComponent(Entity entity) const
     const auto entityId = entity.GetId();
 
     // Test if the bit corresponding to this component type is set in the entity's signature
-    return entityComponentSignature[entityId].test(componentId);
+    return entityComponentSignatures[entityId].test(componentId);
 }
 
 /// @brief Adds a system to the registry
@@ -385,7 +385,7 @@ TSystem &Registry::GetSystem() const
 {
     auto system = systems.find(std::type_index(typeid(TSystem)));
 
-    return *(std::static_cast<TSystem>(system->second));
+    return *(static_cast<TSystem>(system->second));
 }
 
 #endif /** ECS_H */

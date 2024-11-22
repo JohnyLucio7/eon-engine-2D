@@ -14,6 +14,7 @@
 Game::Game()
 {
     isRunning = false;
+    registry = new Registry();
     Logger::Log("Game constructor called!");
 }
 
@@ -118,11 +119,9 @@ void Game::ProcessInput()
 /// @details Configure all game objects before the first frame of main game loop
 void Game::Setup()
 {
-    // Todo:
-    // Entity tank = registry.CreateEntity();
-    // tank.AddComponent<TransformComponent>();
-    // tank.AddComponent<BoxColliderComponent>();
-    // tank.AddComponent<SpriteComponent>("./assets/images/tank.png");
+    // Todo: Create some entities
+    Entity tank = registry->CreateEntity();
+    Entity truck = registry->CreateEntity();
 }
 
 /// @brief Updates game state
@@ -145,10 +144,10 @@ void Game::Update()
     // Store the current frame time
     millisecsPreviousFrame = SDL_GetTicks();
 
-   // Todo:
-   // MovementSystem.Update();
-   // CollisionSystem.Update();
-   // DamageSystem.Update();
+    // Todo:
+    // MovementSystem.Update();
+    // CollisionSystem.Update();
+    // DamageSystem.Update();
 }
 
 /// @brief Renders the game state
