@@ -72,3 +72,5 @@ Fold All (1) e Unfold All (2)
 065 - Entity Class Managing Components                  |   07:25
 066 - A Warning About Cyclic Dependencies               |   02:19
 067 - Movement System                                   |   16:03
+068 - Movement System & Delta Time                      |   03:29
+069 - Render System                                     |   17:27

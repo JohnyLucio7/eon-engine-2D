@@ -15,7 +15,7 @@ public:
         RequireComponent<RigidbodyComponent>();
     }
 
-    void Update()
+    void Update(double deltaTime)
     {
         /// Loop all entities that the system is interested in
         for (auto entity : GetSystemEntities())
@@ -24,17 +24,17 @@ public:
             auto &transform = entity.GetComponent<TransformComponent>();
             const auto rigidbody = entity.GetComponent<RigidbodyComponent>();
 
-            transform.position.x += rigidbody.velocity.x;
-            transform.position.y += rigidbody.velocity.y;
+            transform.position.x += rigidbody.velocity.x * deltaTime;
+            transform.position.y += rigidbody.velocity.y * deltaTime;
 
-            Logger::Log(
-                "Entity id = " +
-                std::to_string(entity.GetId()) +
-                " position is now (" +
-                std::to_string(transform.position.x) +
-                ", " +
-                std::to_string(transform.position.y) +
-                ")");
+            // Logger::Log(
+            //     "Entity id = " +
+            //     std::to_string(entity.GetId()) +
+            //     " position is now (" +
+            //     std::to_string(transform.position.x) +
+            //     ", " +
+            //     std::to_string(transform.position.y) +
+            //     ")");
         }
     }
 };
