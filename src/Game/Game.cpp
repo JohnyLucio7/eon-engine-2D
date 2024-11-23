@@ -20,6 +20,7 @@ Game::Game()
 {
     isRunning = false;
     registry = std::make_unique<Registry>();
+    assetStore = std::make_unique<AssetStore>();
     Logger::Log("Game constructor called!");
 }
 
@@ -128,16 +129,20 @@ void Game::Setup()
     registry->AddSystem<MovementSystem>();
     registry->AddSystem<RenderSystem>();
 
+    // Adding assets to the asset store
+    assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
+    assetStore->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
+
     // Create an entity and add some components to that entity
     Entity tank = registry->CreateEntity();
-    tank.AddComponent<TransformComponent>(glm::vec2(10, 20), glm::vec2(1, 1), 0.0);
+    tank.AddComponent<TransformComponent>(glm::vec2(10, 10), glm::vec2(1, 1), 0.0);
     tank.AddComponent<RigidbodyComponent>(glm::vec2(50, 0));
-    tank.AddComponent<SpriteComponent>(32, 32);
+    tank.AddComponent<SpriteComponent>("tank-image", 32, 32);
 
     Entity truck = registry->CreateEntity();
-    truck.AddComponent<TransformComponent>(glm::vec2(10, 62), glm::vec2(1, 1), 0.0);
+    truck.AddComponent<TransformComponent>(glm::vec2(10, 52), glm::vec2(1, 1), 0.0);
     truck.AddComponent<RigidbodyComponent>(glm::vec2(50, 0));
-    truck.AddComponent<SpriteComponent>(32, 32);
+    truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
 }
 
 /// @brief Updates game state
@@ -177,7 +182,7 @@ void Game::Render()
     SDL_RenderClear(renderer);
 
     // Invoke all the systems that need to render
-    registry->GetSystem<RenderSystem>().Update(renderer);
+    registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
 
     // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs
     SDL_RenderPresent(renderer);
