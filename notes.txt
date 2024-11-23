@@ -70,3 +70,5 @@ Fold All (1) e Unfold All (2)
 063 - Adding our First Components                       |   10:05
 064 - Exercise Entity Class Managing Components         |   17:49
 065 - Entity Class Managing Components                  |   07:25
+066 - A Warning About Cyclic Dependencies               |   02:19
+067 - Movement System                                   |   16:03

@@ -48,27 +48,68 @@ private:
     int id;
 
 public:
+    /// Constructor that initializes an entity with an ID
+    /// @param id Unique identifier for the entity
     Entity(int id) : id(id) {};
+
+    /// Default copy constructor
+    /// @param entity Entity to be copied
     Entity(const Entity &entity) = default;
 
+    /// Gets the entity's ID
+    /// @return Entity's ID
     int GetId() const;
 
+    /// Default assignment operator
+    /// @param other Entity to be assigned
+    /// @return Reference to the current entity
     Entity &operator=(const Entity &other) = default;
+
+    /// Compares if two entities are equal based on their IDs
+    /// @param other Entity to compare with
+    /// @return true if IDs are equal, false otherwise
     bool operator==(const Entity &other) const { return id == other.id; }
+
+    /// Compares if two entities are different based on their IDs
+    /// @param other Entity to compare with
+    /// @return true if IDs are different, false otherwise
     bool operator!=(const Entity &other) const { return id != other.id; }
+
+    /// Compares if current entity's ID is greater than another's
+    /// @param other Entity to compare with
+    /// @return true if current ID is greater, false otherwise
     bool operator>(const Entity &other) const { return id > other.id; }
+
+    /// Compares if current entity's ID is less than another's
+    /// @param other Entity to compare with
+    /// @return true if current ID is less, false otherwise
     bool operator<(const Entity &other) const { return id < other.id; }
 
+    /// Adds a component to the entity
+    /// @tparam TComponent Type of component to be added
+    /// @tparam TArgs Types of arguments for component construction
+    /// @param args Arguments for component construction
     template <typename TComponent, typename... TArgs>
     void AddComponent(TArgs &&...args);
 
+    /// Removes a component from the entity
+    /// @tparam TComponent Type of component to be removed
     template <typename TComponent>
     void RemoveComponent();
+
+    /// Checks if the entity has a specific component
+    /// @tparam TComponent Type of component to check for
+    /// @return true if component exists, false otherwise
     template <typename TComponent>
     bool HasComponent() const;
+
+    /// Gets a component from the entity
+    /// @tparam TComponent Type of component to get
+    /// @return Reference to the component
     template <typename TComponent>
     TComponent &GetComponent() const;
 
+    /// Pointer to the registry that manages entities
     class Registry *registry;
 };
 
@@ -428,27 +469,35 @@ TSystem &Registry::GetSystem() const
 {
     auto system = systems.find(std::type_index(typeid(TSystem)));
 
-    return *(static_cast<TSystem>(system->second));
+    return *(std::static_pointer_cast<TSystem>(system->second));
 }
 
+/// @brief Implementation of component addition
+/// Delegates component addition to the registry
 template <typename TComponent, typename... TArgs>
 void Entity::AddComponent(TArgs &&...args)
 {
     registry->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
 }
 
+/// @brief Implementation of component removal
+/// Delegates component removal to the registry
 template <typename TComponent>
 void Entity::RemoveComponent()
 {
     registry->RemoveComponent<TComponent>(*this);
 }
 
+/// @brief Implementation of component verification
+/// Delegates verification to the registry
 template <typename TComponent>
 bool Entity::HasComponent() const
 {
     return registry->HasComponent<TComponent>(*this);
 }
 
+/// @brief Implementation of component retrieval
+/// Delegates component retrieval to the registry
 template <typename TComponent>
 TComponent &Entity::GetComponent() const
 {

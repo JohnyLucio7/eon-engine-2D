@@ -4,8 +4,11 @@
 #include <chrono>
 #include <ctime>
 
+/// Static vector to store log entries
 std::vector<LogEntry> Logger::messages;
 
+/// Generates a formatted string with the current date and time
+/// @return Formatted date and time string
 std::string CurrentDateTimeToString()
 {
     std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -14,6 +17,9 @@ std::string CurrentDateTimeToString()
     return output;
 }
 
+/// Logs an informational message
+/// Prints the message in green to standard output
+/// @param message Reference to the message to be logged
 void Logger::Log(const std::string &message)
 {
     LogEntry logEntry;
@@ -23,6 +29,10 @@ void Logger::Log(const std::string &message)
 
     messages.push_back(logEntry);
 }
+
+/// Logs an error message
+/// Prints the message in red to standard error
+/// @param message Reference to the error message to be logged
 void Logger::Err(const std::string &message)
 {
     LogEntry logEntry;
