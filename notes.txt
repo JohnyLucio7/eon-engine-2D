@@ -77,3 +77,5 @@ Fold All (1) e Unfold All (2)
 070 - Managing Game Assets                              |   13:55
 071 - The Asset Store                                   |   23:41
 072 - Displaying Textures in our Render System          |   20:28
+073 - Exercise Displaying the Tilemap                   |   08:18
+074 - Displaying the Tilemap                            |   15:06

@@ -13,6 +13,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
+#include <fstream>
 
 /// @brief Constructor for the Game class
 /// @details Initializes the game state to not running and logs creation
@@ -47,8 +48,8 @@ void Game::Initialize()
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
 
-    windowWidth = 800;  // displayMode.w;
-    windowHeight = 600; // displayMode.h;
+    windowWidth = displayMode.w;
+    windowHeight = displayMode.h;
 
     window = SDL_CreateWindow(
         NULL,
@@ -74,7 +75,7 @@ void Game::Initialize()
     }
 
     // set fullscreen window
-    // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     isRunning = true;
 }
@@ -121,9 +122,7 @@ void Game::ProcessInput()
     }
 }
 
-/// @brief Initialize all game objects
-/// @details Configure all game objects before the first frame of main game loop
-void Game::Setup()
+void Game::LoadLevel(int level)
 {
     // Add the systems that need to be processed in our game
     registry->AddSystem<MovementSystem>();
@@ -132,6 +131,39 @@ void Game::Setup()
     // Adding assets to the asset store
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
     assetStore->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
+    assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
+
+    // Todo: Load the tilemap
+    // We need to load that tilemap texture from ./assets/tilemaps/jungle.png
+    // We need to load the file ./assets/tilemaps/jungle.map
+
+    // Load the Tilemap
+    int tileSize = 32;
+    double tileScale = 2.0;
+    int mapNumCols = 25;
+    int mapNumRows = 20;
+    std::fstream mapFile;
+    mapFile.open("./assets/tilemaps/jungle.map");
+
+    for (int y = 0; y < mapNumRows; y++)
+    {
+        for (int x = 0; x < mapNumCols; x++)
+        {
+            char ch;
+            mapFile.get(ch);
+            int srcRectY = std::atoi(&ch) * tileSize;
+            mapFile.get(ch);
+            int srcRectX = std::atoi(&ch) * tileSize;
+            mapFile.ignore();
+
+            Entity tile = registry->CreateEntity();
+
+            tile.AddComponent<TransformComponent>(glm::vec2(x * (tileScale * tileSize), y * (tileScale * tileSize)), glm::vec2(tileScale, tileScale), 0.0);
+
+            tile.AddComponent<SpriteComponent>("tilemap-image", tileSize, tileSize, srcRectX, srcRectY);
+        }
+    }
+    mapFile.close();
 
     // Create an entity and add some components to that entity
     Entity tank = registry->CreateEntity();
@@ -143,6 +175,13 @@ void Game::Setup()
     truck.AddComponent<TransformComponent>(glm::vec2(10, 52), glm::vec2(1, 1), 0.0);
     truck.AddComponent<RigidbodyComponent>(glm::vec2(50, 0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
+}
+
+/// @brief Initialize all game objects
+/// @details Configure all game objects before the first frame of main game loop
+void Game::Setup()
+{
+    LoadLevel(1);
 }
 
 /// @brief Updates game state

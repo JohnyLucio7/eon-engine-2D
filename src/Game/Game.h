@@ -42,6 +42,8 @@ public:
     /// @details Continuously processes input, updates game state, and renders
     void Run();
 
+    void LoadLevel(int level);
+
     /// @brief Initialize the game objects
     /// @details Called one time before the main game loop
     void Setup();
