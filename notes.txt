@@ -79,3 +79,5 @@ Fold All (1) e Unfold All (2)
 072 - Displaying Textures in our Render System          |   20:28
 073 - Exercise Displaying the Tilemap                   |   08:18
 074 - Displaying the Tilemap                            |   15:06
+075 - Rendering Order                                   |   17:48
+076 - Sorting Sprites by Z-Index                        |   16:21
