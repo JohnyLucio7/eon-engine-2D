@@ -83,3 +83,4 @@ Fold All (1) e Unfold All (2)
 076 - Sorting Sprites by Z-Index                        |   16:21
 077 - Animated Sprites                                  |   06:34
 078 - Animation System                                  |   27:43
+079 - Entity Collision Check                            |   18:14

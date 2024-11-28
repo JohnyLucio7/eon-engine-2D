@@ -9,6 +9,7 @@
 #include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
@@ -184,14 +185,16 @@ void Game::LoadLevel(int level)
     radar.AddComponent<AnimationComponent>(8, 5, true);
 
     Entity tank = registry->CreateEntity();
-    tank.AddComponent<TransformComponent>(glm::vec2(10, 10), glm::vec2(1, 1), 0.0);
-    tank.AddComponent<RigidbodyComponent>(glm::vec2(60, 0));
+    tank.AddComponent<TransformComponent>(glm::vec2(500, 10), glm::vec2(1, 1), 0.0);
+    tank.AddComponent<RigidbodyComponent>(glm::vec2(-30, 0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
+    tank.AddComponent<BoxColliderComponent>(32, 32);
 
     Entity truck = registry->CreateEntity();
-    truck.AddComponent<TransformComponent>(glm::vec2(10, 52), glm::vec2(1, 1), 0.0);
-    truck.AddComponent<RigidbodyComponent>(glm::vec2(50, 0));
+    truck.AddComponent<TransformComponent>(glm::vec2(10, 10), glm::vec2(1, 1), 0.0);
+    truck.AddComponent<RigidbodyComponent>(glm::vec2(30, 0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
+    truck.AddComponent<BoxColliderComponent>(32, 32);
 }
 
 /// @brief Initialize all game objects
