@@ -81,3 +81,5 @@ Fold All (1) e Unfold All (2)
 074 - Displaying the Tilemap                            |   15:06
 075 - Rendering Order                                   |   17:48
 076 - Sorting Sprites by Z-Index                        |   16:21
+077 - Animated Sprites                                  |   06:34
+078 - Animation System                                  |   27:43
