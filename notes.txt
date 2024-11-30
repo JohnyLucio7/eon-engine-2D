@@ -5,9 +5,9 @@ Fold All (1) e Unfold All (2)
 
 -----------------------------------------------------------------
 
-001 - Motivations & Learning Outcomes	                |	16:29
+001 - Motivations & Learning Outcomes                   |   16:29
 002 - How to Take this Course                           |   02:50
-003 - Project Technologies & Libraries	                |	22:06
+003 - Project Technologies & Libraries                  |   22:06
 004 - Linux Dependencies                                |   06:18
 005 - MacOs Dependencies                                |   02:35
 006 - A Small Note for Windows Programmers              |   03:39 
@@ -85,3 +85,5 @@ Fold All (1) e Unfold All (2)
 078 - Animation System                                  |   27:43
 079 - Entity Collision Check                            |   18:14
 080 - Implementing the Collision System                 |   27:56
+081 - Exercise Render Collider Rectangle                |   02:21
+082 - Render Collider Rectangle                         |   06:08
