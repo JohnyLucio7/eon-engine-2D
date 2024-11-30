@@ -205,6 +205,7 @@ void Game::LoadLevel(int level)
     truck.AddComponent<RigidbodyComponent>(glm::vec2(30, 0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
     truck.AddComponent<BoxColliderComponent>(32, 32);
+
 }
 
 /// @brief Initialize all game objects

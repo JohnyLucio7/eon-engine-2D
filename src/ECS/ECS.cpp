@@ -14,6 +14,11 @@ int Entity::GetId() const
     return id;
 }
 
+void Entity::Kill()
+{
+    registry->KillEntity(*this);
+}
+
 /// @brief Adds an entity to this system's processing list
 /// @param entity Pointer to the entity to be added
 /// @details Adds the entity to the vector of entities this system processes.
@@ -67,7 +72,24 @@ Entity Registry::CreateEntity()
 {
     long unsigned int entityId;
 
-    entityId = numEntities++;
+    if (freeIds.empty())
+    {
+
+        // If there are no free ids waiting to be reused
+        entityId = numEntities++;
+
+        // Make sure the entityComponentSignature vector can accommodate the new entity
+        if (entityId >= entityComponentSignatures.size())
+        {
+            entityComponentSignatures.resize(entityId + 1);
+        }
+    }
+    else
+    {
+        // Reuse an id from the list of previously removed entities
+        entityId = freeIds.front();
+        freeIds.pop_front();
+    }
 
     Entity entity(entityId);
 
@@ -75,16 +97,14 @@ Entity Registry::CreateEntity()
 
     entitiesToBeAdd.insert(entity);
 
-    // Make sure the entityComponentSignature vector can accommodate the new entity
-
-    if (entityId >= entityComponentSignatures.size())
-    {
-        entityComponentSignatures.resize(entityId + 1);
-    }
-
     Logger::Log("Entity created with id = " + std::to_string(entityId));
 
     return entity;
+}
+
+void Registry::KillEntity(Entity entity)
+{
+    entitiesToBeKilled.insert(entity);
 }
 
 /// @brief Updates which systems should process an entity
@@ -116,6 +136,14 @@ void Registry::AddEntityToSystems(Entity entity)
     }
 }
 
+void Registry::RemoveEntityFromSystems(Entity entity)
+{
+    for (auto system : systems)
+    {
+        system.second->RemoveEntityFromSystem(entity);
+    }
+}
+
 /// @brief Processes pending entity changes
 /// @details This method should:
 /// 1. Process entities in entitiesToBeAdd:
@@ -128,7 +156,7 @@ void Registry::AddEntityToSystems(Entity entity)
 /// @note Currently unimplemented - marked as TODO
 void Registry::Update()
 {
-    // Add the entities that are waiting to be created to the active Systems
+    // Processing the entities that are waiting to be created to the active Systems
     for (auto entity : entitiesToBeAdd)
     {
         AddEntityToSystems(entity);
@@ -136,5 +164,15 @@ void Registry::Update()
 
     entitiesToBeAdd.clear();
 
-    // Todo: Remove the entities that are waiting to be killed from the active Systems
+    // Processing the entities that are waiting to be killed from the active Systems
+    for (auto entity : entitiesToBeKilled)
+    {
+        RemoveEntityFromSystems(entity);
+
+        entityComponentSignatures[entity.GetId()].reset();
+
+        // Make the entity id avaliable to reused
+        freeIds.push_back(entity.GetId());
+    }
+    entitiesToBeKilled.clear();
 }

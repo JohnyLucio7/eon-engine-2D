@@ -6,6 +6,7 @@
 #include <bitset>
 #include <vector>
 #include <set>
+#include <deque>
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
@@ -55,6 +56,8 @@ public:
     /// Default copy constructor
     /// @param entity Entity to be copied
     Entity(const Entity &entity) = default;
+
+    void Kill();
 
     /// Gets the entity's ID
     /// @return Entity's ID
@@ -261,6 +264,9 @@ private:
     std::set<Entity> entitiesToBeAdd;
     std::set<Entity> entitiesToBeKilled;
 
+    /// @brief List of free entity ids that were previously removed
+    std::deque<int> freeIds;
+
 public:
     Registry()
     {
@@ -280,10 +286,14 @@ public:
     /// @return Newly created entity
     Entity CreateEntity();
 
+    void KillEntity(Entity entity);
+
     /// @brief Check the component signature of a entity and add the entity to the systems
     /// that are interested in it
     /// @param entity Entity to be processed
     void AddEntityToSystems(Entity entity);
+
+    void RemoveEntityFromSystems(Entity entity);
 
     /// @brief Adds a component to an entity
     /// @tparam TComponent Type of component to add
@@ -330,7 +340,6 @@ public:
 
     // TODO: Implement the following methods:
     // - KillEntity: Remove an entity from the system
-    // - GetComponent: Retrieve a component from an entity
 };
 
 /// @brief Implementation of the RequireComponent method
