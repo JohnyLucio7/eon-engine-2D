@@ -93,3 +93,5 @@ Fold All (1) e Unfold All (2)
 086 - Event System Design Options                       |   12:40
 087 - Starting to Code the Event System                 |   10:50
 088 - Event Handlers                                    |   30:37
+089 - Emitting Events & Subscribing to Events           |   19:24
+090 - Exercise Key Pressed Event                        |   03:31

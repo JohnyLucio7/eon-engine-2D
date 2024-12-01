@@ -7,6 +7,7 @@
 #include <typeindex>
 #include <memory>
 #include <list>
+#include <functional>
 
 class IEventCallback
 {
@@ -23,7 +24,7 @@ public:
 };
 
 template <typename TOwner, typename TEvent>
-class EventCallback : IEventCallback
+class EventCallback : public IEventCallback
 {
 private:
     typedef void (TOwner::*CallbackFunction)(TEvent &);
@@ -62,6 +63,10 @@ public:
     ~EventBus()
     {
         Logger::Log("EventBus destructor Called!");
+    }
+
+    void Reset() {
+        subscribers.clear();
     }
 
     template <typename TEvent, typename TOwner>
