@@ -7,6 +7,7 @@
 
 #include "../ECS/ECS.h"
 #include "../AssetStore/AssetStore.h"
+#include "../EventBus/EventBus.h"
 #include <SDL2/SDL.h>
 #include <memory>
 
@@ -26,6 +27,7 @@ private:
 
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetStore> assetStore;
+    std::unique_ptr<EventBus> eventBus;
 
 public:
     /// @brief Constructor for the Game class
