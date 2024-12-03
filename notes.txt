@@ -96,3 +96,5 @@ Fold All (1) e Unfold All (2)
 089 - Emitting Events & Subscribing to Events           |   19:24
 090 - Exercise Key Pressed Event                        |   03:31
 091 - Implementing the Key Pressed Event                |   07:32
+092 - Event System Design Patterns                      |   06:27
+093 - Keyboard Control System                           |   21:17
