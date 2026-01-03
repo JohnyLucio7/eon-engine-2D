@@ -14,7 +14,9 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 # Cria o executável
 add_executable(gameengine ${SOURCES}
         src/Components/CameraFollowComponent.h
-        src/Systems/CameraMovementSystem.h)
+        src/Systems/CameraMovementSystem.h
+        src/Components/ProjectileEmitterComponent.h
+        src/Systems/ProjectileEmitSystem.h)
 
 # Linka as bibliotecas que estão no seu Makefile (-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua5.3)
 target_link_libraries(gameengine
