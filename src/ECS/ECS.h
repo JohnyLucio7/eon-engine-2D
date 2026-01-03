@@ -230,7 +230,7 @@ public:
             int index = size;
             entityIdToIndex.emplace(entityId, index);
             indexToEntityId.emplace(index, entityId);
-            if (index >= data.capacity()) {
+            if (static_cast<std::size_t>(index) >= data.capacity()) {
                 data.resize(size * 2);
             }
             data[index] = object;

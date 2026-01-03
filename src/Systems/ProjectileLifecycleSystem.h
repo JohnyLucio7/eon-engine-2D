@@ -19,7 +19,7 @@ public:
             auto projectile = entity.GetComponent<ProjectileComponent>();
 
             // TODO: Kill projectiles after they reach their duration limit
-            if (SDL_GetTicks() - projectile.startTime > projectile.duration) {
+            if (SDL_GetTicks() - projectile.startTime > static_cast<Uint32>(projectile.duration)) {
                 entity.Kill();
             }
         }

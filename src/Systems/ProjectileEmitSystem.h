@@ -80,7 +80,7 @@ public:
 
             // TODO:
             // Check if its time to re-emit a new projectile]
-            if (SDL_GetTicks() - projectileEmitter.lastEmissionTime > projectileEmitter.repeatFrequency) {
+            if (SDL_GetTicks() - projectileEmitter.lastEmissionTime > static_cast<Uint32>(projectileEmitter.repeatFrequency)) {
                 glm::vec2 projectilePosition = transform.position;
                 if (entity.HasComponent<SpriteComponent>()) {
                     const auto sprite = entity.GetComponent<SpriteComponent>();

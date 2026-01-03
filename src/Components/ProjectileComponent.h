@@ -3,7 +3,7 @@
 //
 
 #ifndef EON_ENGINE_2D_PROJECTILECOMPONENT_H
-#define EON_ENGINE_2D_PROJECTILECOMPONENT_H]
+#define EON_ENGINE_2D_PROJECTILECOMPONENT_H
 #include "SDL2/SDL.h"
 
 struct ProjectileComponent {
