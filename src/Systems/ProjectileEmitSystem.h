@@ -24,8 +24,6 @@ public:
     }
 
     void SubscribeToEvents(std::unique_ptr<EventBus> &eventBus) {
-        // TODO:
-        // Subscribe to the event of the SPACE key being pressed
         eventBus->SubscribeToEvent<KeyPreesedEvent>(this, &ProjectileEmitSystem::OnKeyPressed);
     }
 
@@ -78,7 +76,6 @@ public:
                 continue;
             }
 
-            // TODO:
             // Check if its time to re-emit a new projectile]
             if (SDL_GetTicks() - projectileEmitter.lastEmissionTime > static_cast<Uint32>(projectileEmitter.repeatFrequency)) {
                 glm::vec2 projectilePosition = transform.position;
@@ -88,7 +85,6 @@ public:
                     projectilePosition.y += (transform.scale.y * sprite.height / 2);
                 }
 
-                // TODO: Add a new projectile entity to the registry
                 // registry->CreateEntity()...
                 Entity projectile = registry->CreateEntity();
                 projectile.Group("projectiles");
