@@ -32,8 +32,7 @@ int Game::mapHeight;
 
 /// @brief Constructor for the Game class
 /// @details Initializes the game state to not running and logs creation
-Game::Game()
-{
+Game::Game() {
     isRunning = false;
     isDebug = false;
     registry = std::make_unique<Registry>();
@@ -44,18 +43,15 @@ Game::Game()
 
 /// @brief Destructor for the Game class
 /// @details Ensures proper cleanup and logs destruction
-Game::~Game()
-{
+Game::~Game() {
     Logger::Log("Game destructor called!");
 }
 
 /// @brief Initializes the game engine and its core systems
 /// @details Sets up SDL, creates window and renderer with default settings
-void Game::Initialize()
-{
+void Game::Initialize() {
     // Attempt to initialize all SDL subsystems
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-    {
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         Logger::Err("[Error | Class Game | Function 'Initialize()'] - Error initializing SDL!");
         return;
     }
@@ -76,8 +72,7 @@ void Game::Initialize()
         windowHeight,
         SDL_WINDOW_BORDERLESS);
 
-    if (!window)
-    {
+    if (!window) {
         Logger::Err("[Error | Class Game | Function 'Initialize()'] - Error Creating SDL window!");
         return;
     }
@@ -85,8 +80,7 @@ void Game::Initialize()
     // Initialize the renderer for the window
     renderer = SDL_CreateRenderer(window, -1, 0);
 
-    if (!renderer)
-    {
+    if (!renderer) {
         Logger::Err("[Error | Class Game | Function 'Initialize()'] - Error Creating SDL renderer!");
         return;
     }
@@ -94,7 +88,7 @@ void Game::Initialize()
     // set fullscreen window
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
-	// Initialize the camera view with the entire screen area
+    // Initialize the camera view with the entire screen area
     camera.x = 0;
     camera.y = 0;
     camera.w = windowWidth;
@@ -105,12 +99,10 @@ void Game::Initialize()
 
 /// @brief Main game loop
 /// @details Runs the core game loop that processes input, updates game state, and renders
-void Game::Run()
-{
+void Game::Run() {
     Setup();
 
-    while (isRunning)
-    {
+    while (isRunning) {
         ProcessInput();
         Update();
         Render();
@@ -119,41 +111,35 @@ void Game::Run()
 
 /// @brief Handles all input processing
 /// @details Processes SDL events including window closing and keyboard input
-void Game::ProcessInput()
-{
+void Game::ProcessInput() {
     SDL_Event sdlEvent;
-    while (SDL_PollEvent(&sdlEvent))
-    {
-        switch (sdlEvent.type)
-        {
-        case SDL_QUIT:
-            isRunning = false;
-            break;
-
-        case SDL_KEYDOWN:
-
-            if (sdlEvent.key.keysym.sym == SDLK_ESCAPE)
-            {
+    while (SDL_PollEvent(&sdlEvent)) {
+        switch (sdlEvent.type) {
+            case SDL_QUIT:
                 isRunning = false;
-            }
+                break;
 
-            if (sdlEvent.key.keysym.sym == SDLK_d)
-            {
-                isDebug = !isDebug;
-            }
+            case SDL_KEYDOWN:
 
-            eventBus->EmitEvent<KeyPreesedEvent>(sdlEvent.key.keysym.sym);
+                if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
+                    isRunning = false;
+                }
 
-            break;
+                if (sdlEvent.key.keysym.sym == SDLK_d) {
+                    isDebug = !isDebug;
+                }
 
-        default:
-            break;
+                eventBus->EmitEvent<KeyPreesedEvent>(sdlEvent.key.keysym.sym);
+
+                break;
+
+            default:
+                break;
         }
     }
 }
 
-void Game::LoadLevel(int level)
-{
+void Game::LoadLevel(int level) {
     // Add the systems that need to be processed in our game
     registry->AddSystem<MovementSystem>();
     registry->AddSystem<RenderSystem>();
@@ -183,10 +169,8 @@ void Game::LoadLevel(int level)
     std::fstream mapFile;
     mapFile.open("./assets/tilemaps/jungle.map");
 
-    for (int y = 0; y < mapNumRows; y++)
-    {
-        for (int x = 0; x < mapNumCols; x++)
-        {
+    for (int y = 0; y < mapNumRows; y++) {
+        for (int x = 0; x < mapNumCols; x++) {
             char ch;
             mapFile.get(ch);
             int srcRectY = std::atoi(&ch) * tileSize;
@@ -196,9 +180,10 @@ void Game::LoadLevel(int level)
 
             Entity tile = registry->CreateEntity();
 
-            tile.AddComponent<TransformComponent>(glm::vec2(x * (tileScale * tileSize), y * (tileScale * tileSize)), glm::vec2(tileScale, tileScale), 0.0);
+            tile.AddComponent<TransformComponent>(glm::vec2(x * (tileScale * tileSize), y * (tileScale * tileSize)),
+                                                  glm::vec2(tileScale, tileScale), 0.0);
 
-            tile.AddComponent<SpriteComponent>("tilemap-image", tileSize, tileSize, 0, srcRectX, srcRectY);
+            tile.AddComponent<SpriteComponent>("tilemap-image", tileSize, tileSize, 0, false, srcRectX, srcRectY);
         }
     }
     mapFile.close();
@@ -211,18 +196,19 @@ void Game::LoadLevel(int level)
     chopper.AddComponent<RigidbodyComponent>(glm::vec2(0, 0));
     chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
     chopper.AddComponent<AnimationComponent>(2, 15, true);
-    chopper.AddComponent<KeyboardControlledComponent>(glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80), glm::vec2(-80, 0));
+    chopper.AddComponent<KeyboardControlledComponent>(glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80),
+                                                      glm::vec2(-80, 0));
     chopper.AddComponent<CameraFollowComponent>();
 
     Entity radar = registry->CreateEntity();
     radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 74, 10), glm::vec2(1, 1), 0.0);
     radar.AddComponent<RigidbodyComponent>(glm::vec2(0, 0));
-    radar.AddComponent<SpriteComponent>("radar-image", 64, 64, 2);
+    radar.AddComponent<SpriteComponent>("radar-image", 64, 64, 2, true);
     radar.AddComponent<AnimationComponent>(8, 5, true);
 
     Entity tank = registry->CreateEntity();
     tank.AddComponent<TransformComponent>(glm::vec2(500, 10), glm::vec2(1, 1), 0.0);
-    tank.AddComponent<RigidbodyComponent>(glm::vec2(-30, 0));
+    tank.AddComponent<RigidbodyComponent>(glm::vec2(30, 0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
     tank.AddComponent<BoxColliderComponent>(32, 32);
 
@@ -235,22 +221,19 @@ void Game::LoadLevel(int level)
 
 /// @brief Initialize all game objects
 /// @details Configure all game objects before the first frame of main game loop
-void Game::Setup()
-{
+void Game::Setup() {
     LoadLevel(1);
 }
 
 /// @brief Updates game state
 /// @details Currently empty, will be implemented with game logic
-void Game::Update()
-{
+void Game::Update() {
     // TODO: Update game objects
 
     // If we are to fast, waste some time until we reach the MILLISECS_PER_FRAME
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
 
-    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME)
-    {
+    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
         SDL_Delay(timeToWait);
     }
 
@@ -279,8 +262,7 @@ void Game::Update()
 
 /// @brief Renders the game state
 /// @details Currently empty, will be implemented with rendering logic
-void Game::Render()
-{
+void Game::Render() {
     // Working with Double-Buffered (Back and Front) Renderer
     // All of this things be render in the back buffer
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
@@ -288,8 +270,7 @@ void Game::Render()
 
     // Invoke all the systems that need to render
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
-    if (isDebug)
-    {
+    if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer);
     }
 
@@ -299,8 +280,7 @@ void Game::Render()
 
 /// @brief Cleanup function to properly destroy all SDL resources
 /// @details Ensures proper cleanup of renderer, window, and SDL subsystems
-void Game::Destroy()
-{
+void Game::Destroy() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
