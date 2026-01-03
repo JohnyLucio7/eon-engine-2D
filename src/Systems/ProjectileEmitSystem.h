@@ -10,6 +10,7 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/ProjectileEmitterComponent.h"
+#include "../Components/ProjectileComponent.h"
 #include "SDL2/SDL.h"
 
 class ProjectileEmitSystem : public System {
@@ -41,6 +42,9 @@ public:
                 projectile.AddComponent<RigidbodyComponent>(projectileEmitter.projectileVelocity);
                 projectile.AddComponent<SpriteComponent>("bullet-image", 4, 4, 4);
                 projectile.AddComponent<BoxColliderComponent>(4, 4);
+                projectile.AddComponent<ProjectileComponent>(projectileEmitter.isFriendly,
+                                                             projectileEmitter.hitPercentDamage,
+                                                             projectileEmitter.projectileDuration);
 
                 // Update the projectile emitter component last emission to the current milliseconds
                 projectileEmitter.lastEmissionTime = SDL_GetTicks();
