@@ -1,0 +1,82 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-Wfatal-errors",
+      "-std=c++17",
+      "-I./libs/",
+      "-o",
+      "gameengine",
+      "./src/Main.cpp"
+    ],
+    "directory": "/home/lucio/CLionProjects/eon-engine-2D",
+    "file": "/home/lucio/CLionProjects/eon-engine-2D/src/Main.cpp",
+    "output": "/home/lucio/CLionProjects/eon-engine-2D/gameengine"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-Wfatal-errors",
+      "-std=c++17",
+      "-I./libs/",
+      "-o",
+      "gameengine",
+      "./src/Game/Game.cpp"
+    ],
+    "directory": "/home/lucio/CLionProjects/eon-engine-2D",
+    "file": "/home/lucio/CLionProjects/eon-engine-2D/src/Game/Game.cpp",
+    "output": "/home/lucio/CLionProjects/eon-engine-2D/gameengine"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-Wfatal-errors",
+      "-std=c++17",
+      "-I./libs/",
+      "-o",
+      "gameengine",
+      "./src/Logger/Logger.cpp"
+    ],
+    "directory": "/home/lucio/CLionProjects/eon-engine-2D",
+    "file": "/home/lucio/CLionProjects/eon-engine-2D/src/Logger/Logger.cpp",
+    "output": "/home/lucio/CLionProjects/eon-engine-2D/gameengine"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-Wfatal-errors",
+      "-std=c++17",
+      "-I./libs/",
+      "-o",
+      "gameengine",
+      "./src/ECS/ECS.cpp"
+    ],
+    "directory": "/home/lucio/CLionProjects/eon-engine-2D",
+    "file": "/home/lucio/CLionProjects/eon-engine-2D/src/ECS/ECS.cpp",
+    "output": "/home/lucio/CLionProjects/eon-engine-2D/gameengine"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-Wfatal-errors",
+      "-std=c++17",
+      "-I./libs/",
+      "-o",
+      "gameengine",
+      "./src/AssetStore/AssetStore.cpp"
+    ],
+    "directory": "/home/lucio/CLionProjects/eon-engine-2D",
+    "file": "/home/lucio/CLionProjects/eon-engine-2D/src/AssetStore/AssetStore.cpp",
+    "output": "/home/lucio/CLionProjects/eon-engine-2D/gameengine"
+  }
+]
