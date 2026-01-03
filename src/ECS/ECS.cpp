@@ -222,6 +222,11 @@ void Registry::Update() {
         RemoveEntityFromSystems(entity);
         entityComponentSignatures[entity.GetId()].reset();
 
+        // Remove entity from the component pools
+        for (auto pool: componentPools) {
+            pool->RemoveEntityFromPool(entity.GetId());
+        }
+
         // Make the entity id avaliable to reused
         freeIds.push_back(entity.GetId());
 
