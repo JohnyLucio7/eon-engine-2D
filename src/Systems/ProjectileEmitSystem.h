@@ -20,6 +20,11 @@ public:
         RequireComponent<TransformComponent>();
     }
 
+    void SubscribeToEvents(std::unique_ptr<EventBus> &eventBus) {
+        // TODO:
+        // Subscribe to the event of the SPACE key being pressed
+    }
+
     void Update(std::unique_ptr<Registry> &registry) {
         for (auto entity: GetSystemEntities()) {
             auto &projectileEmitter = entity.GetComponent<ProjectileEmitterComponent>();
