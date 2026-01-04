@@ -9,6 +9,7 @@
 #include "../Components/CameraFollowComponent.h"
 #include "../Components/ProjectileEmitterComponent.h"
 #include "../Components/HealthComponent.h"
+#include "../Components/ScriptComponent.h"
 #include "../Components/TextLabelComponent.h"
 #include <fstream>
 #include <string>
@@ -22,7 +23,8 @@ LevelLoader::~LevelLoader() {
     Logger::Log("LevelLoader destructor called!");
 }
 
-void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& registry, const std::unique_ptr<AssetStore>& assetStore, SDL_Renderer* renderer, int levelNumber) {
+void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &registry,
+                            const std::unique_ptr<AssetStore> &assetStore, SDL_Renderer *renderer, int levelNumber) {
     // This checks the syntax of our script, but it does not execute the script
     sol::load_result script = lua.load_file("./assets/scripts/Level" + std::to_string(levelNumber) + ".lua");
     if (!script.valid()) {
@@ -85,7 +87,8 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
             mapFile.ignore();
 
             Entity tile = registry->CreateEntity();
-            tile.AddComponent<TransformComponent>(glm::vec2(x * (mapScale * tileSize), y * (mapScale * tileSize)), glm::vec2(mapScale, mapScale), 0.0);
+            tile.AddComponent<TransformComponent>(glm::vec2(x * (mapScale * tileSize), y * (mapScale * tileSize)),
+                                                  glm::vec2(mapScale, mapScale), 0.0);
             tile.AddComponent<SpriteComponent>(mapTextureAssetId, tileSize, tileSize, 0, false, srcRectX, srcRectY);
         }
     }
@@ -203,7 +206,8 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
                         entity["components"]["projectile_emitter"]["projectile_velocity"]["y"]
                     ),
                     static_cast<int>(entity["components"]["projectile_emitter"]["repeat_frequency"].get_or(1)) * 1000,
-                    static_cast<int>(entity["components"]["projectile_emitter"]["projectile_duration"].get_or(10)) * 1000,
+                    static_cast<int>(entity["components"]["projectile_emitter"]["projectile_duration"].get_or(10)) *
+                    1000,
                     static_cast<int>(entity["components"]["projectile_emitter"]["hit_percentage_damage"].get_or(10)),
                     entity["components"]["projectile_emitter"]["friendly"].get_or(false)
                 );
@@ -236,6 +240,12 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::unique_ptr<Registry>& re
                         entity["components"]["keyboard_controller"]["left_velocity"]["y"]
                     )
                 );
+            }
+
+            sol::optional<sol::table> script = entity["components"]["on_update_script"];
+            if (script != sol::nullopt) {
+                sol::function func = entity["components"]["on_update_script"][0];
+                newEntity.AddComponent<ScriptComponent>(func);
             }
         }
         i++;
