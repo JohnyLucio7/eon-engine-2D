@@ -30,6 +30,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
+#include  <imgui/imgui.h>
+#include  <imgui/imgui_sdl.h>
+#include <imgui/imgui_impl_sdl.h>
 #include <fstream>
 
 int Game::windowWidth;
@@ -95,8 +98,9 @@ void Game::Initialize() {
         return;
     }
 
-    // set fullscreen window
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    // Initialize the ImGui context
+    ImGui::CreateContext();
+    ImGuiSDL::Initialize(renderer, windowWidth, windowHeight);
 
     // Initialize the camera view with the entire screen area
     camera.x = 0;
@@ -104,6 +108,8 @@ void Game::Initialize() {
     camera.w = windowWidth;
     camera.h = windowHeight;
 
+    // set fullscreen window
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     isRunning = true;
 }
 
@@ -124,6 +130,16 @@ void Game::Run() {
 void Game::ProcessInput() {
     SDL_Event sdlEvent;
     while (SDL_PollEvent(&sdlEvent)) {
+        // ImGui SDL Input
+        ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
+        ImGuiIO &io = ImGui::GetIO();
+        int mouseX, mouseY;
+        const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
+        io.MousePos = ImVec2(mouseX, mouseY);
+        io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+        io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+
+        // Handle core SDL events (close window, key pressed, etc.)
         switch (sdlEvent.type) {
             case SDL_QUIT:
                 isRunning = false;
@@ -319,6 +335,11 @@ void Game::Render() {
     registry->GetSystem<RenderHealthBarSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
+
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow();
+        ImGui::Render();
+        ImGuiSDL::Render(ImGui::GetDrawData());
     }
 
     // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs
@@ -328,6 +349,8 @@ void Game::Render() {
 /// @brief Cleanup function to properly destroy all SDL resources
 /// @details Ensures proper cleanup of renderer, window, and SDL subsystems
 void Game::Destroy() {
+    ImGuiSDL::Deinitialize();
+    ImGui::DestroyContext();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
