@@ -10,6 +10,7 @@
 #include "../EventBus/EventBus.h"
 #include <SDL2/SDL.h>
 #include <memory>
+#include <sol/sol.hpp>
 
 const int FPS = 60;
 const int MILLISECS_PER_FRAME = 1000 / FPS;
@@ -25,6 +26,8 @@ private:
     SDL_Window *window;
     SDL_Renderer *renderer;
 	SDL_Rect camera;
+
+    sol::state lua;
 
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetStore> assetStore;
@@ -45,8 +48,6 @@ public:
     /// @brief Runs the main game loop
     /// @details Continuously processes input, updates game state, and renders
     void Run();
-
-    void LoadLevel(int level);
 
     /// @brief Initialize the game objects
     /// @details Called one time before the main game loop
