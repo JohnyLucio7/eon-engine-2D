@@ -2799,7 +2799,7 @@ Level = {
                         local current_velocity_x, current_velocity_y = get_velocity(entity)
 
                         -- if it reaches the top or the bottom of the map
-                        if current_position_y < 10  or current_position_y > map_height - 32 then
+                        if current_position_y < 10 or current_position_y > map_height - 32 then
                             set_velocity(entity, 0, current_velocity_y * -1); -- flip the entity y-velocity
                         else
                             set_velocity(entity, 0, current_velocity_y); -- do not flip y-velocity
