@@ -6,16 +6,7 @@
 #include "LevelLoader.h"
 #include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
-#include "../Components/AnimationComponent.h"
-#include "../Components/BoxColliderComponent.h"
-#include "../Components/KeyboardControlledComponent.h"
-#include "../Components/CameraFollowComponent.h"
-#include "../Components/ProjectileEmitterComponent.h"
-#include "../Components/HealthComponent.h"
-#include "../Components/TextLabelComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/ProjectileEmitSystem.h"
 #include "../Systems/CameraMovementSystem.h"
@@ -30,8 +21,6 @@
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/ProjectileLifecycleSystem.h"
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <glm/glm.hpp>
 #include  <imgui/imgui.h>
 #include  <imgui/imgui_sdl.h>
 #include <imgui/imgui_impl_sdl.h>
@@ -186,7 +175,7 @@ void Game::Setup() {
     registry->AddSystem<RenderGUISystem>();
 
     LevelLoader loader;
-    lua.open_libraries(sol::lib::base, sol::lib::math);
+    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
     loader.LoadLevel(lua, registry, assetStore, renderer, 1);
 }
 

@@ -13,6 +13,7 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/ProjectileEmitterComponent.h"
 #include "../Components/ProjectileComponent.h"
+#include "../Components/CameraFollowComponent.h"
 
 #include "SDL2/SDL.h"
 
@@ -77,7 +78,8 @@ public:
             }
 
             // Check if its time to re-emit a new projectile]
-            if (SDL_GetTicks() - projectileEmitter.lastEmissionTime > static_cast<Uint32>(projectileEmitter.repeatFrequency)) {
+            if (SDL_GetTicks() - projectileEmitter.lastEmissionTime > static_cast<Uint32>(projectileEmitter.
+                    repeatFrequency)) {
                 glm::vec2 projectilePosition = transform.position;
                 if (entity.HasComponent<SpriteComponent>()) {
                     const auto sprite = entity.GetComponent<SpriteComponent>();
