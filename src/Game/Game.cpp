@@ -337,7 +337,7 @@ void Game::Render() {
     registry->GetSystem<RenderHealthBarSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-        registry->GetSystem<RenderGUISystem>().Update();
+        registry->GetSystem<RenderGUISystem>().Update(registry, camera);
     }
 
     // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs
