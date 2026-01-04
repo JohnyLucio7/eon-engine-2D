@@ -24,6 +24,7 @@
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderTextSystem.h"
 #include "../Systems/RenderHealthBarSystem.h"
+#include "../Systems/RenderGUISystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/ProjectileLifecycleSystem.h"
@@ -179,6 +180,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<ProjectileLifecycleSystem>();
     registry->AddSystem<RenderTextSystem>();
     registry->AddSystem<RenderHealthBarSystem>();
+    registry->AddSystem<RenderGUISystem>();
 
     // Adding assets to the asset store
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -335,11 +337,7 @@ void Game::Render() {
     registry->GetSystem<RenderHealthBarSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-
-        ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
-        ImGui::Render();
-        ImGuiSDL::Render(ImGui::GetDrawData());
+        registry->GetSystem<RenderGUISystem>().Update();
     }
 
     // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs

@@ -22,7 +22,8 @@ add_executable(gameengine ${SOURCES}
         src/Systems/ProjectileLifecycleSystem.h
         src/Components/TextLabelComponent.h
         src/Systems/RenderTextSystem.h
-        src/Systems/RenderHealthBarSystem.h)
+        src/Systems/RenderHealthBarSystem.h
+        src/Systems/RenderGUISystem.h)
 
 # Linka as bibliotecas que estão no seu Makefile (-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua5.3)
 target_link_libraries(gameengine
