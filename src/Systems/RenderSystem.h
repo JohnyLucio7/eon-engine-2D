@@ -65,7 +65,7 @@ public:
                 &dstRect,
                 transform.rotation,
                 NULL,
-                SDL_FLIP_NONE);
+                sprite.flip);
 
             // Todo: Draw the PNG Texture
         }

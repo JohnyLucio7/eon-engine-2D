@@ -184,6 +184,7 @@ void Game::LoadLevel(int level) {
 
     // Adding assets to the asset store
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
+    assetStore->AddTexture(renderer, "tree-image", "./assets/images/tree.png");
     assetStore->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
     assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper-spritesheet.png");
     assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
@@ -259,6 +260,26 @@ void Game::LoadLevel(int level) {
         false);
     tank.AddComponent<HealthComponent>(100);
 
+    Entity tankWalker = registry->CreateEntity();
+    tankWalker.Group("enemies");
+    tankWalker.AddComponent<TransformComponent>(glm::vec2(750.0, 750.0), glm::vec2(1.0, 1.0), 0.0);
+    tankWalker.AddComponent<RigidbodyComponent>(glm::vec2(20, 0));
+    tankWalker.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
+    tankWalker.AddComponent<BoxColliderComponent>(32, 32);
+    tankWalker.AddComponent<HealthComponent>(100);
+
+    Entity treeA = registry->CreateEntity();
+    treeA.Group("obstacles");
+    treeA.AddComponent<TransformComponent>(glm::vec2(650.0, 750.0), glm::vec2(1.0, 1.0), 0.0);
+    treeA.AddComponent<SpriteComponent>("tree-image", 16, 32, 1);
+    treeA.AddComponent<BoxColliderComponent>(16, 32);
+
+    Entity treeB = registry->CreateEntity();
+    treeB.Group("obstacles");
+    treeB.AddComponent<TransformComponent>(glm::vec2(850.0, 750.0), glm::vec2(1.0, 1.0), 0.0);
+    treeB.AddComponent<SpriteComponent>("tree-image", 16, 32, 1);
+    treeB.AddComponent<BoxColliderComponent>(16, 32);
+
     Entity truck = registry->CreateEntity();
     truck.Group("enemies");
     truck.AddComponent<TransformComponent>(glm::vec2(200.0, 750.0), glm::vec2(1.0, 1.0), 0.0);
@@ -307,6 +328,7 @@ void Game::Update() {
     eventBus->Reset();
 
     // Perform the subscription of the events for all systems
+    registry->GetSystem<MovementSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<DamageSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<KeyboardControlSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<ProjectileEmitSystem>().SubscribeToEvents(eventBus);
