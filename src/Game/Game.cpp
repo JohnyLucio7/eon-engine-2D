@@ -23,6 +23,7 @@
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderTextSystem.h"
+#include "../Systems/RenderHealthBarSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/ProjectileLifecycleSystem.h"
@@ -161,6 +162,7 @@ void Game::LoadLevel(int level) {
     registry->AddSystem<ProjectileEmitSystem>();
     registry->AddSystem<ProjectileLifecycleSystem>();
     registry->AddSystem<RenderTextSystem>();
+    registry->AddSystem<RenderHealthBarSystem>();
 
     // Adding assets to the asset store
     assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -170,6 +172,8 @@ void Game::LoadLevel(int level) {
     assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
     assetStore->AddTexture(renderer, "bullet-image", "./assets/images/bullet.png");
     assetStore->AddFont("charriot-font", "./assets/fonts/charriot.ttf", 20);
+    assetStore->AddFont("pico8-font-5", "./assets/fonts/pico8.ttf", 5);
+    assetStore->AddFont("pico8-font-10", "./assets/fonts/pico8.ttf", 10);
 
     // Todo: Load the tilemap
     // We need to load that tilemap texture from ./assets/tilemaps/jungle.png
@@ -177,7 +181,7 @@ void Game::LoadLevel(int level) {
 
     // Load the Tilemap
     int tileSize = 32;
-    double tileScale = 2.5;
+    double tileScale = 3;
     int mapNumCols = 25;
     int mapNumRows = 20;
     std::fstream mapFile;
@@ -206,11 +210,11 @@ void Game::LoadLevel(int level) {
     // Create an entity and add some components to that entity
     Entity chopper = registry->CreateEntity();
     chopper.Tag("player");
-    chopper.AddComponent<TransformComponent>(glm::vec2(10, 100), glm::vec2(1, 1), 0.0);
+    chopper.AddComponent<TransformComponent>(glm::vec2(370, 170), glm::vec2(1, 1), 0.0);
     chopper.AddComponent<RigidbodyComponent>(glm::vec2(0, 0));
     chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
     chopper.AddComponent<AnimationComponent>(2, 15, true);
-    chopper.AddComponent<BoxColliderComponent>(32, 32);
+    chopper.AddComponent<BoxColliderComponent>(32, 32, glm::vec2(0, 5));
     chopper.AddComponent<ProjectileEmitterComponent>(glm::vec2(150, 150), 0, 10000, 10, true);
     chopper.AddComponent<KeyboardControlledComponent>(glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80),
                                                       glm::vec2(-80, 0));
@@ -225,7 +229,7 @@ void Game::LoadLevel(int level) {
 
     Entity tank = registry->CreateEntity();
     tank.Group("enemies");
-    tank.AddComponent<TransformComponent>(glm::vec2(500, 10), glm::vec2(1, 1), 0.0);
+    tank.AddComponent<TransformComponent>(glm::vec2(500.0, 750.0), glm::vec2(1.0, 1.0), 0.0);
     tank.AddComponent<RigidbodyComponent>(glm::vec2(0, 0));
     tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
     tank.AddComponent<BoxColliderComponent>(32, 32);
@@ -239,12 +243,12 @@ void Game::LoadLevel(int level) {
 
     Entity truck = registry->CreateEntity();
     truck.Group("enemies");
-    truck.AddComponent<TransformComponent>(glm::vec2(10, 10), glm::vec2(1, 1), 0.0);
+    truck.AddComponent<TransformComponent>(glm::vec2(200.0, 750.0), glm::vec2(1.0, 1.0), 0.0);
     truck.AddComponent<RigidbodyComponent>(glm::vec2(0, 0));
     truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
     truck.AddComponent<BoxColliderComponent>(32, 32);
     truck.AddComponent<ProjectileEmitterComponent>(
-        glm::vec2(0, 100),
+        glm::vec2(0, -100),
         2000,
         5000,
         10,
@@ -312,6 +316,7 @@ void Game::Render() {
     // Invoke all the systems that need to render
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
+    registry->GetSystem<RenderHealthBarSystem>().Update(renderer, assetStore, camera);
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
     }
