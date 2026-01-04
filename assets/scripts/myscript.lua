@@ -1,9 +1,12 @@
 -- This is a lua global variable
-some_variable = 7 * 6
-user_name = "Johny"
+some_variable = 3 ^ (5 * 2)
 
-print("Hello " .. user_name)
-
-if some_variable == 42 then
-    print("The value of the variable is " .. some_variable)
-end
+-- This is a Lua table that contain values for the initialization of our game engine
+config = {
+    title = "My Game Engine",
+    fullscreen = false,
+    resolution = {
+        width = 800,
+        height = 600
+    }
+}
