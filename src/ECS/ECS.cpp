@@ -37,10 +37,7 @@ Entity Registry::CreateEntity() {
     entity.registry = this;
     entitiesToBeAdded.insert(entity);
 
-    // Add to Active Entities list immediately so we can list them in Editor
     activeEntities.insert(entity);
-
-    //Logger::Log("Entity created with id = " + std::to_string(entityId));
 
     return entity;
 }
@@ -50,30 +47,25 @@ void Registry::KillEntity(Entity entity) {
 }
 
 void Registry::Update() {
-    // Processing the entities that are waiting to be added to the active systems
     for (auto entity : entitiesToBeAdded) {
         AddEntityToSystems(entity);
     }
     entitiesToBeAdded.clear();
 
-    // Processing the entities that are waiting to be killed
     for (auto entity : entitiesToBeKilled) {
         RemoveEntityFromSystems(entity);
         entityComponentSignatures[entity.GetId()].reset();
 
-        // Remove from component pools
         for (auto pool : componentPools) {
             if (pool) {
                 pool->RemoveEntityFromPool(entity.GetId());
             }
         }
 
-        // Make the entity id available to be reused
         freeIds.push_back(entity.GetId());
         RemoveEntityTag(entity);
         RemoveEntityGroup(entity);
 
-        // Remove from Master List
         activeEntities.erase(entity);
     }
     entitiesToBeKilled.clear();
@@ -107,7 +99,6 @@ void Registry::RemoveEntityFromSystems(Entity entity) {
     }
 }
 
-// Tag Management
 void Registry::TagEntity(Entity entity, const std::string& tag) {
     entityPerTag.emplace(tag, entity);
     tagPerEntity.emplace(entity.GetId(), tag);
@@ -133,7 +124,11 @@ void Registry::RemoveEntityTag(Entity entity) {
     }
 }
 
-// Group Management
+std::string Registry::GetEntityTag(Entity entity) const {
+    auto tag = tagPerEntity.find(entity.GetId());
+    return (tag != tagPerEntity.end()) ? tag->second : "";
+}
+
 void Registry::GroupEntity(Entity entity, const std::string& group) {
     entitiesPerGroup[group].insert(entity);
     groupPerEntity.emplace(entity.GetId(), group);
@@ -160,6 +155,11 @@ void Registry::RemoveEntityGroup(Entity entity) {
         groupEntities.erase(entity);
         groupPerEntity.erase(groupedEntity);
     }
+}
+
+std::string Registry::GetEntityGroup(Entity entity) const {
+    auto group = groupPerEntity.find(entity.GetId());
+    return (group != groupPerEntity.end()) ? group->second : "";
 }
 
 void Entity::Kill() {

@@ -67,7 +67,9 @@ if(EDITOR_SOURCES)
             src/Editor/MainWindow.cpp
             src/Editor/main.cpp
             src/Editor/GameWidget.h
-            src/Editor/GameWidget.cpp)
+            src/Editor/GameWidget.cpp
+            src/Editor/HierarchyPanel.h
+            src/Editor/HierarchyPanel.cpp)
 
     # Linka com a Engine Core E com o Qt
     target_link_libraries(eon-editor

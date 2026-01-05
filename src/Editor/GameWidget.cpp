@@ -39,20 +39,6 @@ void GameWidget::showEvent(QShowEvent* event) {
     game->Initialize();
     game->Setup();
 
-    // --- BLOCO DE VERIFICAÇÃO (Adicione isto) ---
-    // Teste para confirmar que o Qt consegue ler o Registry da Engine
-    if (game->GetRegistry()) {
-        int entityCount = game->GetRegistry()->GetEntities().size();
-        Logger::Log("\033[36m[Qt Verification] Entities found in Registry: " + std::to_string(entityCount) + "\033[0m");
-
-        // Opcional: Listar o ID da primeira entidade para confirmar leitura
-        if (entityCount > 0) {
-            int firstId = game->GetRegistry()->GetEntities().begin()->GetId();
-            Logger::Log("\033[36m[Qt Verification] ID of first entity: " + std::to_string(firstId) + "\033[0m");
-        }
-    }
-    // --------------------------------------------
-
     connect(gameLoopTimer, &QTimer::timeout, this, &GameWidget::GameLoop);
     gameLoopTimer->start(16);
 
@@ -68,4 +54,8 @@ void GameWidget::GameLoop() {
     game->ProcessInput();
     game->Update();
     game->Render();
+}
+
+Game* GameWidget::GetGame() const {
+    return game.get();
 }

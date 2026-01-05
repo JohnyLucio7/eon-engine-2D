@@ -15,6 +15,9 @@ public:
 
     QPaintEngine* paintEngine() const override;
 
+    // NEW: Accessor to allow other Editor panels to reach the Game Instance
+    Game* GetGame() const;
+
 protected:
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
