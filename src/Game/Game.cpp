@@ -116,8 +116,6 @@ void Game::Run() {
         Update();
         Render();
 
-        // Capping Logic moved here to support standalone execution
-        // This ensures the standalone game runs at ~60 FPS
         int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
         if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
             SDL_Delay(timeToWait);
@@ -149,7 +147,6 @@ void Game::ProcessInput() {
 }
 
 void Game::Setup() {
-    // Initialize timing to avoid huge delta on first frame
     millisecsPreviousFrame = SDL_GetTicks();
 
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
@@ -166,9 +163,6 @@ void Game::Setup() {
 }
 
 void Game::Update() {
-    // Removed SDL_Delay from here to prevent blocking the Qt Event Loop.
-    // The delay is now handled in Run() for standalone, or by QTimer in the Editor.
-
     double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
     millisecsPreviousFrame = SDL_GetTicks();
 
@@ -209,4 +203,8 @@ void Game::Destroy() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+Registry* Game::GetRegistry() const {
+    return registry.get();
 }
