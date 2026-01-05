@@ -44,17 +44,8 @@ LevelLoader::~LevelLoader() {
 
 void LevelLoader::LoadLevel(sol::state &lua, std::unique_ptr<Registry> &registry,
                             const std::unique_ptr<AssetStore> &assetStore, SDL_Renderer *renderer, int levelNumber) {
-    sol::load_result script = lua.load_file("./assets/scripts/Level" + std::to_string(levelNumber) + ".lua");
-    if (!script.valid()) {
-        sol::error err = script;
-        std::string errorMessage = err.what();
-        Logger::Err("Error loading the lua script: " + errorMessage);
-        return;
-    }
 
-    lua.script_file("./assets/scripts/Level" + std::to_string(levelNumber) + ".lua");
-    sol::table level = lua["Level"];
-
+    // 1. Definição da Factory de Sistemas (Movido para o topo para garantir acesso em caso de fallback)
     std::map<std::string, std::function<void()>> systemFactory = {
         {"MovementSystem", [&registry]() { registry->AddSystem<MovementSystem>(); }},
         {"RenderSystem", [&registry]() { registry->AddSystem<RenderSystem>(); }},
@@ -71,6 +62,44 @@ void LevelLoader::LoadLevel(sol::state &lua, std::unique_ptr<Registry> &registry
         {"ScriptSystem", [&registry]() { registry->AddSystem<ScriptSystem>(); }}
     };
 
+    // Lista de sistemas padrão para fallback
+    std::vector<std::string> defaultSystems = {
+        "MovementSystem",
+        "RenderSystem",
+        "AnimationSystem",
+        "CollisionSystem",
+        "RenderColliderSystem",
+        "DamageSystem",
+        "KeyboardControlSystem",
+        "CameraMovementSystem",
+        "ProjectileEmitSystem",
+        "ProjectileLifecycleSystem",
+        "RenderTextSystem",
+        "RenderHealthBarSystem",
+        "ScriptSystem"
+    };
+
+    // 2. Tentar carregar o script Lua
+    std::string scriptPath = "./assets/scripts/Level" + std::to_string(levelNumber) + ".lua";
+    sol::load_result script = lua.load_file(scriptPath);
+
+    // BLINDAGEM: Se o arquivo não existir, carregamos o básico e retornamos para evitar Crash (SIGSEGV)
+    if (!script.valid()) {
+        sol::error err = script;
+        std::string errorMessage = err.what();
+        Logger::Err("[Critical] Failed to load level script: " + errorMessage);
+        Logger::Err("[Recovery] Loading default systems to prevent engine crash.");
+
+        for (const auto& sys : defaultSystems) {
+            systemFactory[sys]();
+        }
+        return;
+    }
+
+    // 3. Script carregado com sucesso, prosseguir com a leitura normal
+    lua.script_file(scriptPath);
+    sol::table level = lua["Level"];
+
     sol::optional<sol::table> systemsConfig = level["config"]["systems"];
     if (systemsConfig) {
         Logger::Log("\033[36m[System Config] Loading systems from Lua configuration...\033[0m");
@@ -86,21 +115,6 @@ void LevelLoader::LoadLevel(sol::state &lua, std::unique_ptr<Registry> &registry
         }
     } else {
         Logger::Log("\033[33m[System Config] No config found in Lua. Loading default systems.\033[0m");
-        std::vector<std::string> defaultSystems = {
-            "MovementSystem",
-            "RenderSystem",
-            "AnimationSystem",
-            "CollisionSystem",
-            "RenderColliderSystem",
-            "DamageSystem",
-            "KeyboardControlSystem",
-            "CameraMovementSystem",
-            "ProjectileEmitSystem",
-            "ProjectileLifecycleSystem",
-            "RenderTextSystem",
-            "RenderHealthBarSystem",
-            "ScriptSystem"
-        };
         for (const auto& sys : defaultSystems) {
             systemFactory[sys]();
         }
@@ -136,22 +150,26 @@ void LevelLoader::LoadLevel(sol::state &lua, std::unique_ptr<Registry> &registry
     double mapScale = map["scale"];
     std::fstream mapFile;
     mapFile.open(mapFilePath);
-    for (int y = 0; y < mapNumRows; y++) {
-        for (int x = 0; x < mapNumCols; x++) {
-            char ch;
-            mapFile.get(ch);
-            int srcRectY = std::atoi(&ch) * tileSize;
-            mapFile.get(ch);
-            int srcRectX = std::atoi(&ch) * tileSize;
-            mapFile.ignore();
+    if (mapFile.is_open()) {
+        for (int y = 0; y < mapNumRows; y++) {
+            for (int x = 0; x < mapNumCols; x++) {
+                char ch;
+                mapFile.get(ch);
+                int srcRectY = std::atoi(&ch) * tileSize;
+                mapFile.get(ch);
+                int srcRectX = std::atoi(&ch) * tileSize;
+                mapFile.ignore();
 
-            Entity tile = registry->CreateEntity();
-            tile.AddComponent<TransformComponent>(glm::vec2(x * (mapScale * tileSize), y * (mapScale * tileSize)),
-                                                  glm::vec2(mapScale, mapScale), 0.0);
-            tile.AddComponent<SpriteComponent>(mapTextureAssetId, tileSize, tileSize, 0, false, srcRectX, srcRectY);
+                Entity tile = registry->CreateEntity();
+                tile.AddComponent<TransformComponent>(glm::vec2(x * (mapScale * tileSize), y * (mapScale * tileSize)),
+                                                      glm::vec2(mapScale, mapScale), 0.0);
+                tile.AddComponent<SpriteComponent>(mapTextureAssetId, tileSize, tileSize, 0, false, srcRectX, srcRectY);
+            }
         }
+        mapFile.close();
+    } else {
+        Logger::Err("Failed to open map file: " + mapFilePath);
     }
-    mapFile.close();
     Game::mapWidth = mapNumCols * tileSize * mapScale;
     Game::mapHeight = mapNumRows * tileSize * mapScale;
 

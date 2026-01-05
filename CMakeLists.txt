@@ -65,7 +65,9 @@ if(EDITOR_SOURCES)
     add_executable(eon-editor ${EDITOR_SOURCES}
             src/Editor/MainWindow.h
             src/Editor/MainWindow.cpp
-            src/Editor/main.cpp)
+            src/Editor/main.cpp
+            src/Editor/GameWidget.h
+            src/Editor/GameWidget.cpp)
 
     # Linka com a Engine Core E com o Qt
     target_link_libraries(eon-editor
