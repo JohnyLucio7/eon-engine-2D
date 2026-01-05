@@ -36,6 +36,7 @@ void GameWidget::showEvent(QShowEvent* event) {
     Logger::Log("\033[36m[Qt] GameWidget obtaining Native Window Handle...\033[0m");
 
     game->AttachToWindow(nativeWindowHandle, width(), height());
+    game->Initialize();
     game->Setup();
 
     connect(gameLoopTimer, &QTimer::timeout, this, &GameWidget::GameLoop);
