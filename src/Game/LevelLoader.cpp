@@ -11,9 +11,28 @@
 #include "../Components/HealthComponent.h"
 #include "../Components/ScriptComponent.h"
 #include "../Components/TextLabelComponent.h"
+
+#include "../Systems/MovementSystem.h"
+#include "../Systems/RenderSystem.h"
+#include "../Systems/AnimationSystem.h"
+#include "../Systems/CollisionSystem.h"
+#include "../Systems/RenderColliderSystem.h"
+#include "../Systems/DamageSystem.h"
+#include "../Systems/KeyboardControlSystem.h"
+#include "../Systems/CameraMovementSystem.h"
+#include "../Systems/ProjectileEmitSystem.h"
+#include "../Systems/ProjectileLifecycleSystem.h"
+#include "../Systems/RenderTextSystem.h"
+#include "../Systems/RenderHealthBarSystem.h"
+#include "../Systems/ScriptSystem.h"
+
 #include <fstream>
 #include <string>
+#include <vector>
+#include <functional>
+#include <map>
 #include <sol/sol.hpp>
+#include <glm/glm.hpp>
 
 LevelLoader::LevelLoader() {
     Logger::Log("LevelLoader constructor called!");
@@ -23,9 +42,8 @@ LevelLoader::~LevelLoader() {
     Logger::Log("LevelLoader destructor called!");
 }
 
-void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &registry,
+void LevelLoader::LoadLevel(sol::state &lua, std::unique_ptr<Registry> &registry,
                             const std::unique_ptr<AssetStore> &assetStore, SDL_Renderer *renderer, int levelNumber) {
-    // This checks the syntax of our script, but it does not execute the script
     sol::load_result script = lua.load_file("./assets/scripts/Level" + std::to_string(levelNumber) + ".lua");
     if (!script.valid()) {
         sol::error err = script;
@@ -34,17 +52,61 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
         return;
     }
 
-    // Executes the script using the Sol state
     lua.script_file("./assets/scripts/Level" + std::to_string(levelNumber) + ".lua");
-
-    // Read the big table for the current level
     sol::table level = lua["Level"];
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Read the level assets
-    ////////////////////////////////////////////////////////////////////////////
-    sol::table assets = level["assets"];
+    std::map<std::string, std::function<void()>> systemFactory = {
+        {"MovementSystem", [&registry]() { registry->AddSystem<MovementSystem>(); }},
+        {"RenderSystem", [&registry]() { registry->AddSystem<RenderSystem>(); }},
+        {"AnimationSystem", [&registry]() { registry->AddSystem<AnimationSystem>(); }},
+        {"CollisionSystem", [&registry]() { registry->AddSystem<CollisionSystem>(); }},
+        {"RenderColliderSystem", [&registry]() { registry->AddSystem<RenderColliderSystem>(); }},
+        {"DamageSystem", [&registry]() { registry->AddSystem<DamageSystem>(); }},
+        {"KeyboardControlSystem", [&registry]() { registry->AddSystem<KeyboardControlSystem>(); }},
+        {"CameraMovementSystem", [&registry]() { registry->AddSystem<CameraMovementSystem>(); }},
+        {"ProjectileEmitSystem", [&registry]() { registry->AddSystem<ProjectileEmitSystem>(); }},
+        {"ProjectileLifecycleSystem", [&registry]() { registry->AddSystem<ProjectileLifecycleSystem>(); }},
+        {"RenderTextSystem", [&registry]() { registry->AddSystem<RenderTextSystem>(); }},
+        {"RenderHealthBarSystem", [&registry]() { registry->AddSystem<RenderHealthBarSystem>(); }},
+        {"ScriptSystem", [&registry]() { registry->AddSystem<ScriptSystem>(); }}
+    };
 
+    sol::optional<sol::table> systemsConfig = level["config"]["systems"];
+    if (systemsConfig) {
+        Logger::Log("\033[36m[System Config] Loading systems from Lua configuration...\033[0m");
+        sol::table systemsTable = systemsConfig.value();
+        for (const auto& entry : systemsTable) {
+            std::string systemName = entry.second.as<std::string>();
+            if (systemFactory.find(systemName) != systemFactory.end()) {
+                systemFactory[systemName]();
+                Logger::Log("\033[32m[System Config] Added system: " + systemName + "\033[0m");
+            } else {
+                Logger::Err("[System Config] System not found in factory: " + systemName);
+            }
+        }
+    } else {
+        Logger::Log("\033[33m[System Config] No config found in Lua. Loading default systems.\033[0m");
+        std::vector<std::string> defaultSystems = {
+            "MovementSystem",
+            "RenderSystem",
+            "AnimationSystem",
+            "CollisionSystem",
+            "RenderColliderSystem",
+            "DamageSystem",
+            "KeyboardControlSystem",
+            "CameraMovementSystem",
+            "ProjectileEmitSystem",
+            "ProjectileLifecycleSystem",
+            "RenderTextSystem",
+            "RenderHealthBarSystem",
+            "ScriptSystem"
+        };
+        for (const auto& sys : defaultSystems) {
+            systemFactory[sys]();
+        }
+    }
+
+    sol::table assets = level["assets"];
     int i = 0;
     while (true) {
         sol::optional<sol::table> hasAsset = assets[i];
@@ -65,9 +127,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
         i++;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Read the level tilemap information
-    ////////////////////////////////////////////////////////////////////////////
     sol::table map = level["tilemap"];
     std::string mapFilePath = map["map_file"];
     std::string mapTextureAssetId = map["texture_asset_id"];
@@ -96,9 +155,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
     Game::mapWidth = mapNumCols * tileSize * mapScale;
     Game::mapHeight = mapNumRows * tileSize * mapScale;
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Read the level entities and their components
-    ////////////////////////////////////////////////////////////////////////////
     sol::table entities = level["entities"];
     i = 0;
     while (true) {
@@ -111,22 +167,18 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
 
         Entity newEntity = registry->CreateEntity();
 
-        // Tag
         sol::optional<std::string> tag = entity["tag"];
         if (tag != sol::nullopt) {
             newEntity.Tag(entity["tag"]);
         }
 
-        // Group
         sol::optional<std::string> group = entity["group"];
         if (group != sol::nullopt) {
             newEntity.Group(entity["group"]);
         }
 
-        // Components
         sol::optional<sol::table> hasComponents = entity["components"];
         if (hasComponents != sol::nullopt) {
-            // Transform
             sol::optional<sol::table> transform = entity["components"]["transform"];
             if (transform != sol::nullopt) {
                 newEntity.AddComponent<TransformComponent>(
@@ -142,7 +194,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                 );
             }
 
-            // RigidBody
             sol::optional<sol::table> rigidbody = entity["components"]["rigidbody"];
             if (rigidbody != sol::nullopt) {
                 newEntity.AddComponent<RigidbodyComponent>(
@@ -153,7 +204,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                 );
             }
 
-            // Sprite
             sol::optional<sol::table> sprite = entity["components"]["sprite"];
             if (sprite != sol::nullopt) {
                 newEntity.AddComponent<SpriteComponent>(
@@ -167,7 +217,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                 );
             }
 
-            // Animation
             sol::optional<sol::table> animation = entity["components"]["animation"];
             if (animation != sol::nullopt) {
                 newEntity.AddComponent<AnimationComponent>(
@@ -176,7 +225,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                 );
             }
 
-            // BoxCollider
             sol::optional<sol::table> collider = entity["components"]["boxcollider"];
             if (collider != sol::nullopt) {
                 newEntity.AddComponent<BoxColliderComponent>(
@@ -189,7 +237,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                 );
             }
 
-            // Health
             sol::optional<sol::table> health = entity["components"]["health"];
             if (health != sol::nullopt) {
                 newEntity.AddComponent<HealthComponent>(
@@ -197,7 +244,6 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                 );
             }
 
-            // ProjectileEmitter
             sol::optional<sol::table> projectileEmitter = entity["components"]["projectile_emitter"];
             if (projectileEmitter != sol::nullopt) {
                 newEntity.AddComponent<ProjectileEmitterComponent>(
@@ -206,20 +252,17 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                         entity["components"]["projectile_emitter"]["projectile_velocity"]["y"]
                     ),
                     static_cast<int>(entity["components"]["projectile_emitter"]["repeat_frequency"].get_or(1)) * 1000,
-                    static_cast<int>(entity["components"]["projectile_emitter"]["projectile_duration"].get_or(10)) *
-                    1000,
+                    static_cast<int>(entity["components"]["projectile_emitter"]["projectile_duration"].get_or(10)) * 1000,
                     static_cast<int>(entity["components"]["projectile_emitter"]["hit_percentage_damage"].get_or(10)),
                     entity["components"]["projectile_emitter"]["friendly"].get_or(false)
                 );
             }
 
-            // CameraFollow
             sol::optional<sol::table> cameraFollow = entity["components"]["camera_follow"];
             if (cameraFollow != sol::nullopt) {
                 newEntity.AddComponent<CameraFollowComponent>();
             }
 
-            // KeyboardControlled
             sol::optional<sol::table> keyboardControlled = entity["components"]["keyboard_controller"];
             if (keyboardControlled != sol::nullopt) {
                 newEntity.AddComponent<KeyboardControlledComponent>(
@@ -239,6 +282,25 @@ void LevelLoader::LoadLevel(sol::state &lua, const std::unique_ptr<Registry> &re
                         entity["components"]["keyboard_controller"]["left_velocity"]["x"],
                         entity["components"]["keyboard_controller"]["left_velocity"]["y"]
                     )
+                );
+            }
+
+            sol::optional<sol::table> textLabel = entity["components"]["text_label"];
+            if (textLabel != sol::nullopt) {
+                newEntity.AddComponent<TextLabelComponent>(
+                    glm::vec2(
+                        entity["components"]["text_label"]["position"]["x"],
+                        entity["components"]["text_label"]["position"]["y"]
+                    ),
+                    static_cast<std::string>(entity["components"]["text_label"]["text"]),
+                    static_cast<std::string>(entity["components"]["text_label"]["font_id"]),
+                    SDL_Color{
+                        static_cast<Uint8>(entity["components"]["text_label"]["color"]["r"]),
+                        static_cast<Uint8>(entity["components"]["text_label"]["color"]["g"]),
+                        static_cast<Uint8>(entity["components"]["text_label"]["color"]["b"]),
+                        static_cast<Uint8>(entity["components"]["text_label"]["color"]["a"])
+                    },
+                    static_cast<bool>(entity["components"]["text_label"]["is_fixed"])
                 );
             }
 

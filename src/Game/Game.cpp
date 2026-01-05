@@ -58,7 +58,6 @@ void Game::AttachToWindow(void* handle, int width, int height) {
     windowWidth = width;
     windowHeight = height;
 
-    // Cyan color for System Info
     Logger::Log("\033[36m[System] Engine attached to external window handle successfully.\033[0m");
 }
 
@@ -93,7 +92,6 @@ void Game::Initialize() {
         }
 
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-        // Cyan color for System Info
         Logger::Log("\033[36m[System] Standalone SDL Window created successfully.\033[0m");
     }
 
@@ -144,25 +142,17 @@ void Game::ProcessInput() {
 }
 
 void Game::Setup() {
-    registry->AddSystem<MovementSystem>();
-    registry->AddSystem<RenderSystem>();
-    registry->AddSystem<AnimationSystem>();
-    registry->AddSystem<CollisionSystem>();
-    registry->AddSystem<RenderColliderSystem>();
-    registry->AddSystem<DamageSystem>();
-    registry->AddSystem<KeyboardControlSystem>();
-    registry->AddSystem<CameraMovementSystem>();
-    registry->AddSystem<ProjectileEmitSystem>();
-    registry->AddSystem<ProjectileLifecycleSystem>();
-    registry->AddSystem<RenderTextSystem>();
-    registry->AddSystem<RenderHealthBarSystem>();
-    registry->AddSystem<ScriptSystem>();
-
-    registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua);
+    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
 
     LevelLoader loader;
-    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
     loader.LoadLevel(lua, registry, assetStore, renderer, 2);
+
+    if (registry->HasSystem<ScriptSystem>()) {
+        registry->GetSystem<ScriptSystem>().CreateLuaBindings(lua);
+        Logger::Log("\033[32m[Info] Lua bindings created successfully.\033[0m");
+    } else {
+        Logger::Err("\033[31m[Error] ScriptSystem not found! Lua bindings skipped.\033[0m");
+    }
 }
 
 void Game::Update() {

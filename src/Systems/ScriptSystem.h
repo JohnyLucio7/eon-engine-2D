@@ -9,7 +9,7 @@
 #include "../Components/ProjectileEmitterComponent.h"
 #include <tuple>
 
-std::tuple<double, double> GetEntityPosition(Entity entity) {
+inline std::tuple<double, double> GetEntityPosition(Entity entity) {
     if (entity.HasComponent<TransformComponent>()) {
         const auto transform = entity.GetComponent<TransformComponent>();
         return std::make_tuple(transform.position.x, transform.position.y);
@@ -19,7 +19,7 @@ std::tuple<double, double> GetEntityPosition(Entity entity) {
     }
 }
 
-std::tuple<double, double> GetEntityVelocity(Entity entity) {
+inline std::tuple<double, double> GetEntityVelocity(Entity entity) {
     if (entity.HasComponent<RigidbodyComponent>()) {
         const auto rigidbody = entity.GetComponent<RigidbodyComponent>();
         return std::make_tuple(rigidbody.velocity.x, rigidbody.velocity.y);
@@ -29,7 +29,7 @@ std::tuple<double, double> GetEntityVelocity(Entity entity) {
     }
 }
 
-void SetEntityPosition(Entity entity, double x, double y) {
+inline void SetEntityPosition(Entity entity, double x, double y) {
     if (entity.HasComponent<TransformComponent>()) {
         auto& transform = entity.GetComponent<TransformComponent>();
         transform.position.x = x;
@@ -39,7 +39,7 @@ void SetEntityPosition(Entity entity, double x, double y) {
     }
 }
 
-void SetEntityVelocity(Entity entity, double x, double y) {
+inline void SetEntityVelocity(Entity entity, double x, double y) {
     if (entity.HasComponent<RigidbodyComponent>()) {
         auto& rigidbody = entity.GetComponent<RigidbodyComponent>();
         rigidbody.velocity.x = x;
@@ -49,7 +49,7 @@ void SetEntityVelocity(Entity entity, double x, double y) {
     }
 }
 
-void SetEntityRotation(Entity entity, double angle) {
+inline void SetEntityRotation(Entity entity, double angle) {
     if (entity.HasComponent<TransformComponent>()) {
         auto& transform = entity.GetComponent<TransformComponent>();
         transform.rotation = angle;
@@ -58,7 +58,7 @@ void SetEntityRotation(Entity entity, double angle) {
     }
 }
 
-void SetEntityAnimationFrame(Entity entity, int frame) {
+inline void SetEntityAnimationFrame(Entity entity, int frame) {
     if (entity.HasComponent<AnimationComponent>()) {
         auto& animation = entity.GetComponent<AnimationComponent>();
         animation.currentFrame = frame;
@@ -67,7 +67,7 @@ void SetEntityAnimationFrame(Entity entity, int frame) {
     }
 }
 
-void SetProjectileVelocity(Entity entity, double x, double y) {
+inline void SetProjectileVelocity(Entity entity, double x, double y) {
     if (entity.HasComponent<ProjectileEmitterComponent>()) {
         auto& projectileEmitter = entity.GetComponent<ProjectileEmitterComponent>();
         projectileEmitter.projectileVelocity.x = x;
@@ -84,7 +84,6 @@ class ScriptSystem: public System {
         }
 
         void CreateLuaBindings(sol::state& lua) {
-            // Create the "entity" usertype so Lua knows what an entity is
             lua.new_usertype<Entity>(
                 "entity",
                 "get_id", &Entity::GetId,
@@ -93,7 +92,6 @@ class ScriptSystem: public System {
                 "belongs_to_group", &Entity::BelongsToGroup
             );
 
-            // Create all the bindings between C++ and Lua functions
             lua.set_function("get_position", GetEntityPosition);
             lua.set_function("get_velocity", GetEntityVelocity);
             lua.set_function("set_position", SetEntityPosition);
@@ -104,12 +102,10 @@ class ScriptSystem: public System {
         }
 
         void Update(double deltaTime, int ellapsedTime) {
-            // Loop all entities that have a script component and invoke their Lua function
             for (auto entity: GetSystemEntities()) {
                 const auto script = entity.GetComponent<ScriptComponent>();
-                script.func(entity, deltaTime, ellapsedTime); // here is where we invoke a sol::function
+                script.func(entity, deltaTime, ellapsedTime);
             }
         }
 };
-
 #endif
