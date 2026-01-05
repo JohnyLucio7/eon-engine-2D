@@ -16,15 +16,11 @@
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderTextSystem.h"
 #include "../Systems/RenderHealthBarSystem.h"
-#include "../Systems/RenderGUISystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/ProjectileLifecycleSystem.h"
 #include "../Systems/ScriptSystem.h"
 #include <SDL2/SDL.h>
-#include  <imgui/imgui.h>
-#include  <imgui/imgui_sdl.h>
-#include <imgui/imgui_impl_sdl.h>
 #include <fstream>
 
 int Game::windowWidth;
@@ -90,10 +86,6 @@ void Game::Initialize() {
         return;
     }
 
-    // Initialize the ImGui context
-    ImGui::CreateContext();
-    ImGuiSDL::Initialize(renderer, windowWidth, windowHeight);
-
     // Initialize the camera view with the entire screen area
     camera.x = 0;
     camera.y = 0;
@@ -109,7 +101,6 @@ void Game::Initialize() {
 /// @details Runs the core game loop that processes input, updates game state, and renders
 void Game::Run() {
     Setup();
-
     while (isRunning) {
         ProcessInput();
         Update();
@@ -122,15 +113,6 @@ void Game::Run() {
 void Game::ProcessInput() {
     SDL_Event sdlEvent;
     while (SDL_PollEvent(&sdlEvent)) {
-        // ImGui SDL Input
-        ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
-        ImGuiIO &io = ImGui::GetIO();
-        int mouseX, mouseY;
-        const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
-        io.MousePos = ImVec2(mouseX, mouseY);
-        io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
-        io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
-
         // Handle core SDL events (close window, key pressed, etc.)
         switch (sdlEvent.type) {
             case SDL_QUIT:
@@ -150,7 +132,6 @@ void Game::ProcessInput() {
                 eventBus->EmitEvent<KeyPreesedEvent>(sdlEvent.key.keysym.sym);
 
                 break;
-
             default:
                 break;
         }
@@ -173,7 +154,6 @@ void Game::Setup() {
     registry->AddSystem<ProjectileLifecycleSystem>();
     registry->AddSystem<RenderTextSystem>();
     registry->AddSystem<RenderHealthBarSystem>();
-    registry->AddSystem<RenderGUISystem>();
     registry->AddSystem<ScriptSystem>();
 
     // Create the bindings between C++ and Lua
@@ -236,9 +216,9 @@ void Game::Render() {
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
     registry->GetSystem<RenderHealthBarSystem>().Update(renderer, assetStore, camera);
+
     if (isDebug) {
         registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
-        registry->GetSystem<RenderGUISystem>().Update(registry, camera);
     }
 
     // So when we call this, we swap the back buffer with the front buffer, rendering all previous designs
@@ -248,8 +228,6 @@ void Game::Render() {
 /// @brief Cleanup function to properly destroy all SDL resources
 /// @details Ensures proper cleanup of renderer, window, and SDL subsystems
 void Game::Destroy() {
-    ImGuiSDL::Deinitialize();
-    ImGui::DestroyContext();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
