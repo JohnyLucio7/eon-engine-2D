@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "GameWidget.h"
 #include "HierarchyPanel.h"
+#include "InspectorPanel.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -15,6 +16,7 @@ public:
 private:
     GameWidget* gameWidget;
     HierarchyPanel* hierarchyPanel;
+    InspectorPanel* inspectorPanel;
 };
 
 #endif // MAINWINDOW_H
