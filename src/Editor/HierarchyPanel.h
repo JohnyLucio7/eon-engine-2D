@@ -4,6 +4,7 @@
 #include <QDockWidget>
 #include <QTreeWidget>
 #include <QTimer>
+#include <map>
 #include "../Game/Game.h"
 
 class HierarchyPanel : public QDockWidget {
@@ -14,18 +15,20 @@ public:
     ~HierarchyPanel();
 
     signals:
-        // Sinal emitido quando o usuário clica em uma entidade na lista
         void EntitySelected(int entityId);
 
 private slots:
     void UpdateHierarchy();
-    // Slot interno para tratar o clique do QTreeWidget
     void OnItemClicked(QTreeWidgetItem* item, int column);
 
 private:
     Game* game;
     QTreeWidget* treeWidget;
     QTimer* refreshTimer;
+
+    // Mapeia ID da Entidade -> Item Visual na Árvore
+    // Isso permite atualizar itens existentes sem destruir a árvore inteira
+    std::map<int, QTreeWidgetItem*> activeTreeItems;
 };
 
 #endif // HIERARCHYPANEL_H
