@@ -162,26 +162,54 @@ void Game::Reload() {
     Logger::Log("\033[32m[System] Scripts Reloaded!\033[0m");
 }
 
+void Game::SetGameMode(GameMode mode) {
+    if (gameMode == mode) return;
+
+    if (mode == GameMode::Play) {
+        Logger::Log("\033[32m[Game] Entering Play Mode. Creating Backup...\033[0m");
+        if (!registryBackup) {
+            registryBackup = std::make_unique<Registry>();
+        }
+        registryBackup->CopyStateFrom(*registry);
+        gameMode = GameMode::Play;
+    } else {
+        Logger::Log("\033[31m[Game] Stopping Play Mode. Restoring Backup...\033[0m");
+        if (registryBackup) {
+            registry->CopyStateFrom(*registryBackup);
+        } else {
+            Logger::Err("[Game] Critical Error: No backup found to restore!");
+        }
+        gameMode = GameMode::Edit;
+    }
+}
+
+GameMode Game::GetGameMode() const {
+    return gameMode;
+}
+
 void Game::Update() {
     double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
     millisecsPreviousFrame = SDL_GetTicks();
 
     eventBus->Reset();
 
-    registry->GetSystem<MovementSystem>().SubscribeToEvents(eventBus);
-    registry->GetSystem<DamageSystem>().SubscribeToEvents(eventBus);
-    registry->GetSystem<KeyboardControlSystem>().SubscribeToEvents(eventBus);
-    registry->GetSystem<ProjectileEmitSystem>().SubscribeToEvents(eventBus);
-
     registry->Update();
 
-    registry->GetSystem<MovementSystem>().Update(deltaTime);
-    registry->GetSystem<AnimationSystem>().Update();
-    registry->GetSystem<CollisionSystem>().Update(eventBus);
-    registry->GetSystem<ProjectileEmitSystem>().Update(registry);
+    if (gameMode == GameMode::Play) {
+        registry->GetSystem<MovementSystem>().SubscribeToEvents(eventBus);
+        registry->GetSystem<DamageSystem>().SubscribeToEvents(eventBus);
+        registry->GetSystem<KeyboardControlSystem>().SubscribeToEvents(eventBus);
+        registry->GetSystem<ProjectileEmitSystem>().SubscribeToEvents(eventBus);
+        registry->GetSystem<CollisionSystem>().Update(eventBus);
+
+        registry->GetSystem<MovementSystem>().Update(deltaTime);
+        registry->GetSystem<AnimationSystem>().Update();
+        registry->GetSystem<ProjectileEmitSystem>().Update(registry);
+        registry->GetSystem<ProjectileLifecycleSystem>().Update();
+        registry->GetSystem<ScriptSystem>().Update(deltaTime, SDL_GetTicks());
+    }
+
     registry->GetSystem<CameraMovementSystem>().Update(camera);
-    registry->GetSystem<ProjectileLifecycleSystem>().Update();
-    registry->GetSystem<ScriptSystem>().Update(deltaTime, SDL_GetTicks());
 }
 
 void Game::Render() {

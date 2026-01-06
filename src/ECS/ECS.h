@@ -12,7 +12,6 @@
 #include <algorithm>
 
 const unsigned int MAX_COMPONENTS = 32;
-
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
 class Entity {
@@ -22,7 +21,6 @@ public:
     Entity(int id) : id(id) {};
     Entity(const Entity& entity) = default;
     int GetId() const { return id; };
-
     bool operator ==(const Entity& other) const { return id == other.id; }
     bool operator !=(const Entity& other) const { return id != other.id; }
     bool operator >(const Entity& other) const { return id > other.id; }
@@ -69,6 +67,10 @@ public:
     std::vector<Entity> GetSystemEntities() const;
     const Signature& GetComponentSignature() const;
 
+    void ClearEntities() {
+        entities.clear();
+    }
+
     template <typename TComponent> void RequireComponent();
 };
 
@@ -76,6 +78,7 @@ class IPool {
 public:
     virtual ~IPool() = default;
     virtual void RemoveEntityFromPool(int entityId) = 0;
+    virtual std::shared_ptr<IPool> Clone() = 0;
 };
 
 template <typename T>
@@ -93,6 +96,10 @@ public:
     }
 
     virtual ~Pool() = default;
+
+    std::shared_ptr<IPool> Clone() override {
+        return std::make_shared<Pool<T>>(*this);
+    }
 
     bool IsEmpty() const { return size == 0; }
     int GetSize() const { return size; }
@@ -182,8 +189,44 @@ public:
     Registry() { Logger::Log("Registry constructor called!"); }
     ~Registry() { Logger::Log("Registry destructor called!"); }
 
+    void CopyStateFrom(const Registry& other) {
+        Logger::Log("\033[33m[Registry] Starting deep copy of ECS state...\033[0m");
+
+        this->numEntities = other.numEntities;
+        this->entitiesToBeAdded = other.entitiesToBeAdded;
+        this->entitiesToBeKilled = other.entitiesToBeKilled;
+        this->activeEntities = other.activeEntities;
+        this->entityComponentSignatures = other.entityComponentSignatures;
+        this->entityPerTag = other.entityPerTag;
+        this->tagPerEntity = other.tagPerEntity;
+        this->entitiesPerGroup = other.entitiesPerGroup;
+        this->groupPerEntity = other.groupPerEntity;
+        this->freeIds = other.freeIds;
+
+        this->componentPools.clear();
+        this->componentPools.resize(other.componentPools.size());
+
+        for (size_t i = 0; i < other.componentPools.size(); ++i) {
+            if (other.componentPools[i]) {
+                this->componentPools[i] = other.componentPools[i]->Clone();
+            } else {
+                this->componentPools[i] = nullptr;
+            }
+        }
+
+        for (auto& systemPair : systems) {
+            systemPair.second->ClearEntities();
+        }
+
+        for (const auto& entity : activeEntities) {
+            AddEntityToSystems(entity);
+        }
+
+        Logger::Log("\033[32m[Registry] ECS state restored successfully.\033[0m");
+    }
+
     void Update();
-    void Clear(); // New method to wipe the world
+    void Clear();
 
     Entity CreateEntity();
     void KillEntity(Entity entity);
@@ -196,7 +239,6 @@ public:
     Entity GetEntityByTag(const std::string& tag) const;
     void RemoveEntityTag(Entity entity);
     std::string GetEntityTag(Entity entity) const;
-
     void GroupEntity(Entity entity, const std::string& group);
     bool EntityBelongsToGroup(Entity entity, const std::string& group) const;
     std::vector<Entity> GetEntitiesByGroup(const std::string& group) const;
@@ -207,7 +249,6 @@ public:
     template <typename TComponent> void RemoveComponent(Entity entity);
     template <typename TComponent> bool HasComponent(Entity entity) const;
     template <typename TComponent> TComponent& GetComponent(Entity entity) const;
-
     template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
     template <typename TSystem> void RemoveSystem();
     template <typename TSystem> bool HasSystem() const;
@@ -248,7 +289,6 @@ template <typename TComponent>
 void Registry::RemoveComponent(Entity entity) {
     const auto componentId = Component<TComponent>::GetId();
     const auto entityId = entity.GetId();
-
     std::shared_ptr<Pool<TComponent>> pool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
     pool->Remove(entityId);
 
@@ -313,4 +353,4 @@ TComponent& Entity::GetComponent() {
     return registry->GetComponent<TComponent>(*this);
 }
 
-#endif // ECS_H
+#endif

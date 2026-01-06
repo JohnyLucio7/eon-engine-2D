@@ -1,7 +1,3 @@
-/// @file Game.h
-/// @brief Header file for the Game class that manages the core game engine functionality
-/// @details Provides the main game loop, initialization, and cleanup functionality using SDL2
-
 #ifndef GAME_H
 #define GAME_H
 
@@ -14,6 +10,11 @@
 
 const int FPS = 60;
 const int MILLISECS_PER_FRAME = 1000 / FPS;
+
+enum class GameMode {
+    Edit,
+    Play
+};
 
 class Game
 {
@@ -28,29 +29,37 @@ private:
     sol::state lua;
 
     std::unique_ptr<Registry> registry;
+    std::unique_ptr<Registry> registryBackup;
+
     std::unique_ptr<AssetStore> assetStore;
     std::unique_ptr<EventBus> eventBus;
+
+    GameMode gameMode = GameMode::Edit;
+
 public:
     Game();
     ~Game();
     void Initialize();
     void Run();
     void Setup();
-    void Reload(); // Hot Reloading method
+    void Reload();
     void ProcessInput();
     void Update();
     void Render();
     void Destroy();
     void AttachToWindow(void* handle, int width, int height);
 
+    void SetGameMode(GameMode mode);
+    GameMode GetGameMode() const;
+
     Registry* GetRegistry() const;
     AssetStore* GetAssetStore() const;
     SDL_Rect& GetCamera();
-    SDL_Renderer* GetRenderer() const; // NEW
+    SDL_Renderer* GetRenderer() const;
 
     static int windowWidth;
     static int windowHeight;
     static int mapWidth;
     static int mapHeight;
 };
-#endif /* GAME_H */
+#endif
