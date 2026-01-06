@@ -35,7 +35,6 @@ private:
     std::unique_ptr<Game> game;
     QTimer* gameLoopTimer;
 
-    // Método auxiliar para criar entidade a partir do arquivo
     void CreateEntityFromAsset(const QString& filePath, int x, int y);
 };
 

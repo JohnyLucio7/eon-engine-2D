@@ -48,7 +48,6 @@ void InspectorPanel::OnEntitySelected(int entityId) {
     // Nota: Entity é apenas um wrapper leve para um ID e um ponteiro de registro.
     Entity entity(entityId);
     entity.registry = game->GetRegistry();
-    // OBS: O método GetRegistry no Game.cpp retorna Registry*, então usamos .get() se fosse smart pointer
     // mas na nossa implementação atual retorna ponteiro bruto, então só atribuímos.
     entity.registry = game->GetRegistry();
 
