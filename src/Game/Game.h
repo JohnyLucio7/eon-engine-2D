@@ -36,6 +36,9 @@ private:
 
     GameMode gameMode = GameMode::Edit;
 
+    int renderWidth;
+    int renderHeight;
+
 public:
     Game();
     ~Game();
@@ -48,6 +51,8 @@ public:
     void Render();
     void Destroy();
     void AttachToWindow(void* handle, int width, int height);
+    void ResizeWindow(int width, int height);
+    void SetRenderLogicalSize(int width, int height);
 
     void SetGameMode(GameMode mode);
     GameMode GetGameMode() const;
