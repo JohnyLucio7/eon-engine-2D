@@ -15,8 +15,6 @@ GameWidget::GameWidget(QWidget* parent) : QWidget(parent) {
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
-
-    // Habilita o Widget para aceitar Drops (arquivos do Asset Browser)
     setAcceptDrops(true);
 
     game = std::make_unique<Game>();
@@ -66,8 +64,6 @@ Game* GameWidget::GetGame() const {
     return game.get();
 }
 
-// === Implementação Drag & Drop ===
-
 void GameWidget::dragEnterEvent(QDragEnterEvent* event) {
     if (event->mimeData()->hasUrls()) {
         event->acceptProposedAction();
@@ -76,7 +72,6 @@ void GameWidget::dragEnterEvent(QDragEnterEvent* event) {
 
 void GameWidget::dropEvent(QDropEvent* event) {
     const QMimeData* mimeData = event->mimeData();
-
     if (mimeData->hasUrls()) {
         QList<QUrl> urlList = mimeData->urls();
         if (!urlList.isEmpty()) {
@@ -96,34 +91,32 @@ void GameWidget::CreateEntityFromAsset(const QString& filePath, int mouseX, int 
 
     QFileInfo fileInfo(filePath);
     QString extension = fileInfo.suffix().toLower();
-    QString fileName = fileInfo.fileName(); // Ex: tank.png
+    QString fileName = fileInfo.fileName();
+    QString baseName = fileInfo.baseName();
 
     if (extension == "png" || extension == "jpg" || extension == "jpeg") {
-
-        // 1. Converter posição da tela para posição do mundo
         SDL_Rect camera = game->GetCamera();
         int worldX = camera.x + mouseX;
         int worldY = camera.y + mouseY;
 
         std::string assetId = fileName.toStdString();
 
-        // 2. Carregar textura no AssetStore (mesmo que já exista, o AddTexture lida ou sobrescreve)
-        // Precisamos do Renderer para criar a textura
         game->GetAssetStore()->AddTexture(game->GetRenderer(), assetId, filePath.toStdString());
 
-        // 3. Obter dimensões da textura carregada para configurar o Sprite corretamente
         SDL_Texture* texture = game->GetAssetStore()->GetTexture(assetId);
         int texWidth = 32;
         int texHeight = 32;
+
         if (texture) {
             SDL_QueryTexture(texture, NULL, NULL, &texWidth, &texHeight);
         } else {
              Logger::Err("[Qt] Failed to retrieve texture after loading: " + assetId);
         }
 
-        // 4. Criar Entidade e Componentes
         Registry* registry = game->GetRegistry();
         Entity newEntity = registry->CreateEntity();
+
+        newEntity.Tag(baseName.toStdString());
 
         newEntity.AddComponent<TransformComponent>(
             glm::vec2(worldX, worldY),
@@ -135,10 +128,9 @@ void GameWidget::CreateEntityFromAsset(const QString& filePath, int mouseX, int 
             assetId,
             texWidth,
             texHeight,
-            2 // Z-index padrão
+            2
         );
 
-        // Opcional: Adicionar BoxCollider baseado no tamanho da imagem
         newEntity.AddComponent<BoxColliderComponent>(
             texWidth,
             texHeight
@@ -146,7 +138,6 @@ void GameWidget::CreateEntityFromAsset(const QString& filePath, int mouseX, int 
 
         Logger::Log("\033[32m[Qt] Created Entity " + std::to_string(newEntity.GetId()) +
                     " from asset " + assetId + " at (" + std::to_string(worldX) + "," + std::to_string(worldY) + ")\033[0m");
-
     } else {
          Logger::Err("[Qt] Unsupported file type for drop: " + extension.toStdString());
     }
