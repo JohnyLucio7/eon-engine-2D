@@ -15,8 +15,6 @@
 const int FPS = 60;
 const int MILLISECS_PER_FRAME = 1000 / FPS;
 
-/// @brief Main game engine class
-/// @details Manages the game loop, window creation, rendering, and input processing
 class Game
 {
 private:
@@ -38,13 +36,13 @@ public:
     void Initialize();
     void Run();
     void Setup();
+    void Reload(); // Hot Reloading method
     void ProcessInput();
     void Update();
     void Render();
     void Destroy();
     void AttachToWindow(void* handle, int width, int height);
 
-    // Exposed to Editor
     Registry* GetRegistry() const;
 
     static int windowWidth;

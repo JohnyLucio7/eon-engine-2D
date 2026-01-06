@@ -1,7 +1,3 @@
-/// @file Game.cpp
-/// @brief Implementation of the Game class that handles core game engine functionality
-/// @author Johny Lúcio Teixeira da Costa
-
 #include "Game.h"
 #include "LevelLoader.h"
 #include "../Logger/Logger.h"
@@ -160,6 +156,13 @@ void Game::Setup() {
     } else {
         Logger::Err("\033[31m[Error] ScriptSystem not found! Lua bindings skipped.\033[0m");
     }
+}
+
+void Game::Reload() {
+    Logger::Log("\033[33m[System] Hot Reloading Scripts...\033[0m");
+    registry->Clear();
+    Setup();
+    Logger::Log("\033[32m[System] Scripts Reloaded!\033[0m");
 }
 
 void Game::Update() {

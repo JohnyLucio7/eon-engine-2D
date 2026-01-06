@@ -71,6 +71,19 @@ void Registry::Update() {
     entitiesToBeKilled.clear();
 }
 
+void Registry::Clear() {
+    // Prevent pending creations
+    entitiesToBeAdded.clear();
+
+    // Mark all active entities for destruction
+    for (auto entity : activeEntities) {
+        KillEntity(entity);
+    }
+
+    // Process the destruction immediately
+    Update();
+}
+
 const std::set<Entity>& Registry::GetEntities() const {
     return activeEntities;
 }

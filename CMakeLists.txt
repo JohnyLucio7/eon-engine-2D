@@ -71,7 +71,9 @@ if(EDITOR_SOURCES)
             src/Editor/HierarchyPanel.h
             src/Editor/HierarchyPanel.cpp
             src/Editor/InspectorPanel.h
-            src/Editor/InspectorPanel.cpp)
+            src/Editor/InspectorPanel.cpp
+            src/Editor/ScriptEditorPanel.h
+            src/Editor/ScriptEditorPanel.cpp)
 
     # Linka com a Engine Core E com o Qt
     target_link_libraries(eon-editor

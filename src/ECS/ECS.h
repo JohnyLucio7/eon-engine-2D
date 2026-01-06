@@ -1,7 +1,3 @@
-/// @file ECS.h
-/// @brief Entity Component System Core Implementation
-/// @details Defines Entity, Component, System, and Registry classes
-
 #ifndef ECS_H
 #define ECS_H
 
@@ -187,6 +183,7 @@ public:
     ~Registry() { Logger::Log("Registry destructor called!"); }
 
     void Update();
+    void Clear(); // New method to wipe the world
 
     Entity CreateEntity();
     void KillEntity(Entity entity);
@@ -198,14 +195,12 @@ public:
     bool EntityHasTag(Entity entity, const std::string& tag) const;
     Entity GetEntityByTag(const std::string& tag) const;
     void RemoveEntityTag(Entity entity);
-    // NEW: Needed for Editor Hierarchy
     std::string GetEntityTag(Entity entity) const;
 
     void GroupEntity(Entity entity, const std::string& group);
     bool EntityBelongsToGroup(Entity entity, const std::string& group) const;
     std::vector<Entity> GetEntitiesByGroup(const std::string& group) const;
     void RemoveEntityGroup(Entity entity);
-    // NEW: Needed for Editor Hierarchy
     std::string GetEntityGroup(Entity entity) const;
 
     template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
