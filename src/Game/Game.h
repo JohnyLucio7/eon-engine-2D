@@ -44,6 +44,9 @@ public:
     void AttachToWindow(void* handle, int width, int height);
 
     Registry* GetRegistry() const;
+    AssetStore* GetAssetStore() const;
+    SDL_Rect& GetCamera();
+    SDL_Renderer* GetRenderer() const; // NEW
 
     static int windowWidth;
     static int windowHeight;

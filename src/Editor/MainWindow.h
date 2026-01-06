@@ -6,6 +6,7 @@
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
 #include "ScriptEditorPanel.h"
+#include "AssetBrowserPanel.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -19,6 +20,6 @@ private:
     HierarchyPanel* hierarchyPanel;
     InspectorPanel* inspectorPanel;
     ScriptEditorPanel* scriptEditorPanel;
+    AssetBrowserPanel* assetBrowserPanel;
 };
-
 #endif // MAINWINDOW_H

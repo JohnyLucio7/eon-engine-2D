@@ -70,7 +70,6 @@ void Game::Initialize() {
     if (!window) {
         SDL_DisplayMode displayMode;
         SDL_GetCurrentDisplayMode(0, &displayMode);
-
         windowWidth = displayMode.w;
         windowHeight = displayMode.h;
 
@@ -81,7 +80,6 @@ void Game::Initialize() {
             windowWidth,
             windowHeight,
             SDL_WINDOW_BORDERLESS);
-
         if (!window) {
             Logger::Err("[Error | Class Game | Initialize] - Error Creating SDL window!");
             return;
@@ -111,7 +109,6 @@ void Game::Run() {
         ProcessInput();
         Update();
         Render();
-
         int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
         if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
             SDL_Delay(timeToWait);
@@ -210,4 +207,16 @@ void Game::Destroy() {
 
 Registry* Game::GetRegistry() const {
     return registry.get();
+}
+
+AssetStore* Game::GetAssetStore() const {
+    return assetStore.get();
+}
+
+SDL_Rect& Game::GetCamera() {
+    return camera;
+}
+
+SDL_Renderer* Game::GetRenderer() const {
+    return renderer;
 }
