@@ -21,12 +21,13 @@ public:
         for (auto entity: GetSystemEntities()) {
             auto transform = entity.GetComponent<TransformComponent>();
 
+            // CORREÇÃO: Usar camera.w e camera.h (Resolução Lógica) em vez de Game::windowWidth/Height (Janela Física)
             if (transform.position.x + (camera.w / 2) < Game::mapWidth) {
-                camera.x = transform.position.x - (Game::windowWidth / 2);
+                camera.x = transform.position.x - (camera.w / 2);
             }
 
             if (transform.position.y + (camera.h / 2) < Game::mapHeight) {
-                camera.y = transform.position.y - (Game::windowHeight / 2);
+                camera.y = transform.position.y - (camera.h / 2);
             }
 
             // Keep camera rectangle view inside the screen limits
@@ -37,5 +38,4 @@ public:
         }
     }
 };
-
 #endif //EON_ENGINE_2D_CAMERAMOVEMENTSYSTEM_H
