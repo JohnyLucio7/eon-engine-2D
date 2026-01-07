@@ -2,20 +2,18 @@
 #include "../Logger/Logger.h"
 #include <QStyle>
 #include <QDebug>
+#include <QShowEvent>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     this->setWindowTitle("Eon Engine Editor");
     this->resize(1280, 800);
 
-    // Configuração do Tab Widget Central
     mainTabWidget = new QTabWidget(this);
     setCentralWidget(mainTabWidget);
 
-    // Setup do Game Widget e sua Aba
     gameWidget = new GameWidget(this);
     SetupGameTab();
 
-    // Inicialização dos Painéis Acopláveis
     hierarchyPanel = new HierarchyPanel(gameWidget->GetGame(), this);
     addDockWidget(Qt::LeftDockWidgetArea, hierarchyPanel);
 
@@ -30,7 +28,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     tabifyDockWidget(scriptEditorPanel, assetBrowserPanel);
     assetBrowserPanel->raise();
 
-    // Toolbar Principal
     toolbar = addToolBar("Game Controls");
     toolbar->setMovable(false);
 
@@ -45,11 +42,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(stopAction, &QAction::triggered, this, &MainWindow::OnStopClicked);
     toolbar->addAction(stopAction);
 
-    // Conexões de sinais
     connect(hierarchyPanel, &HierarchyPanel::EntitySelected,
             inspectorPanel, &InspectorPanel::OnEntitySelected);
 
-    // Ajuste dos Docks
     QList<QDockWidget*> hDocks;
     hDocks << hierarchyPanel << inspectorPanel;
     QList<int> hSizes;
@@ -58,7 +53,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
     resizeDocks({scriptEditorPanel, assetBrowserPanel}, {250, 250}, Qt::Vertical);
 
-    // Definição das Resoluções e Aspect Ratios
     aspectRatios.append(qMakePair(QString("Free Aspect"), 0.0));
     aspectRatios.append(qMakePair(QString("16:9"), 1.7777));
     aspectRatios.append(qMakePair(QString("16:10"), 1.6));
@@ -76,7 +70,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     resolutions4_3.append({800, 600, "SVGA"});
     resolutions4_3.append({640, 480, "VGA"});
 
-    // Popula Combo de Aspect Ratio
     for(const auto& ar : aspectRatios) {
         aspectRatioComboBox->addItem(ar.first);
     }
@@ -93,10 +86,10 @@ void MainWindow::SetupGameTab() {
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
-    // Barra de Ferramentas da Game View
     QWidget* gameToolbar = new QWidget();
     gameToolbar->setFixedHeight(30);
     gameToolbar->setStyleSheet("background-color: #333333;");
+
     QHBoxLayout* toolbarLayout = new QHBoxLayout(gameToolbar);
     toolbarLayout->setContentsMargins(5, 0, 5, 0);
 
@@ -106,7 +99,7 @@ void MainWindow::SetupGameTab() {
     connect(aspectRatioComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnAspectRatioChanged(int)));
 
     resolutionComboBox = new QComboBox();
-    resolutionComboBox->setEnabled(false); // Inicia desabilitado (Free Aspect)
+    resolutionComboBox->setEnabled(false);
     connect(resolutionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnResolutionChanged(int)));
 
     scaleLabel = new QLabel("Scale: 1x");
@@ -118,12 +111,9 @@ void MainWindow::SetupGameTab() {
     toolbarLayout->addWidget(scaleLabel);
     toolbarLayout->addStretch();
 
-    // Área do Viewport (Fundo Cinza)
     gameViewport = new QWidget();
-    gameViewport->setStyleSheet("background-color: #202020;"); // Cor escura estilo Unity
+    gameViewport->setStyleSheet("background-color: #202020;");
 
-    // O GameWidget será adicionado ao gameViewport, mas não via layout padrão para permitir centralização manual
-    // Para simplificar, usamos um Grid Layout centralizado
     QGridLayout* viewportLayout = new QGridLayout(gameViewport);
     viewportLayout->setContentsMargins(0, 0, 0, 0);
     viewportLayout->setAlignment(Qt::AlignCenter);
@@ -139,8 +129,7 @@ void MainWindow::OnAspectRatioChanged(int index) {
     double aspect = aspectRatios[index].second;
 
     resolutionComboBox->clear();
-
-    if (aspect == 0.0) { // Free Aspect
+    if (aspect == 0.0) {
         resolutionComboBox->addItem("Window Size");
         resolutionComboBox->setEnabled(false);
     } else {
@@ -163,7 +152,6 @@ void MainWindow::PopulateResolutionsForAspect(double aspect) {
             QString itemText = QString("%1 (%2x%3)").arg(res.name).arg(res.width).arg(res.height);
             resolutionComboBox->addItem(itemText, QVariant::fromValue(QSize(res.width, res.height)));
         }
-        // Seleciona um padrão (ex: Full HD ou primeiro da lista)
         if (resolutionComboBox->count() > 1) resolutionComboBox->setCurrentIndex(1);
         else resolutionComboBox->setCurrentIndex(0);
     }
@@ -178,43 +166,42 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     UpdateGameViewLayout();
 }
 
+void MainWindow::showEvent(QShowEvent* event) {
+    QMainWindow::showEvent(event);
+    QTimer::singleShot(100, this, &MainWindow::UpdateGameViewLayout);
+}
+
 void MainWindow::UpdateGameViewLayout() {
     if (!gameWidget || !gameViewport) return;
 
     double targetAspect = aspectRatios[aspectRatioComboBox->currentIndex()].second;
     QSize availableSize = gameViewport->size();
 
-    if (availableSize.width() == 0 || availableSize.height() == 0) return;
+    if (availableSize.width() <= 0 || availableSize.height() <= 0) return;
 
     int newWidth, newHeight;
     double scaleFactor = 1.0;
     int logicalWidth, logicalHeight;
 
     if (targetAspect == 0.0) {
-        // Free Aspect
         newWidth = availableSize.width();
         newHeight = availableSize.height();
         logicalWidth = newWidth;
         logicalHeight = newHeight;
         scaleFactor = 1.0;
     } else {
-        // Fixed Aspect
-        // Pega a resolução lógica selecionada
         QSize selectedRes = resolutionComboBox->currentData().toSize();
-        if (!selectedRes.isValid()) selectedRes = QSize(1920, 1080); // Fallback
+        if (!selectedRes.isValid()) selectedRes = QSize(1920, 1080);
 
         logicalWidth = selectedRes.width();
         logicalHeight = selectedRes.height();
 
-        // Calcula tamanho físico do widget para caber no viewport mantendo aspecto
         double availableAspect = (double)availableSize.width() / availableSize.height();
 
         if (availableAspect > targetAspect) {
-            // Viewport é mais largo que o alvo (Pillarbox)
             newHeight = availableSize.height();
             newWidth = static_cast<int>(newHeight * targetAspect);
         } else {
-            // Viewport é mais alto que o alvo (Letterbox)
             newWidth = availableSize.width();
             newHeight = static_cast<int>(newWidth / targetAspect);
         }
@@ -222,10 +209,10 @@ void MainWindow::UpdateGameViewLayout() {
         scaleFactor = (double)newWidth / logicalWidth;
     }
 
-    // Aplica as dimensões físicas ao widget Qt (isso redimensiona a janela SDL)
-    gameWidget->setFixedSize(newWidth, newHeight);
+    if (gameWidget->width() != newWidth || gameWidget->height() != newHeight) {
+        gameWidget->setFixedSize(newWidth, newHeight);
+    }
 
-    // Atualiza a engine com o tamanho físico e a resolução lógica
     if (gameWidget->GetGame()) {
         gameWidget->GetGame()->ResizeWindow(newWidth, newHeight);
         gameWidget->GetGame()->SetRenderLogicalSize(logicalWidth, logicalHeight);

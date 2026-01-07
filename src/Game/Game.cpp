@@ -65,13 +65,6 @@ void Game::AttachToWindow(void* handle, int width, int height) {
 void Game::ResizeWindow(int width, int height) {
     windowWidth = width;
     windowHeight = height;
-
-    // Se não estivermos usando uma resolução lógica fixa (Free Aspect), atualizamos a renderização para bater com a janela
-    // Caso contrário, apenas a janela física muda, mas o RenderLogicalSize cuida da escala interna
-    if (window) {
-        // Em alguns sistemas SDL, o resize da janela é automático ao redimensionar o widget pai,
-        // mas aqui mantemos as variáveis estáticas atualizadas.
-    }
 }
 
 void Game::SetRenderLogicalSize(int width, int height) {
@@ -108,6 +101,7 @@ void Game::Initialize() {
             windowWidth,
             windowHeight,
             SDL_WINDOW_BORDERLESS);
+
         if (!window) {
             Logger::Err("[Error | Class Game | Initialize] - Error Creating SDL window!");
             return;
@@ -123,7 +117,6 @@ void Game::Initialize() {
         return;
     }
 
-    // Aplica a resolução lógica inicial
     SDL_RenderSetLogicalSize(renderer, renderWidth, renderHeight);
 
     camera.x = 0;
@@ -240,7 +233,6 @@ void Game::Update() {
         registry->GetSystem<ScriptSystem>().Update(deltaTime, SDL_GetTicks());
     }
 
-    // Atualiza a câmera baseada no tamanho lógico de renderização
     camera.w = renderWidth;
     camera.h = renderHeight;
     registry->GetSystem<CameraMovementSystem>().Update(camera);

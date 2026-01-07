@@ -51,6 +51,9 @@ void GameWidget::showEvent(QShowEvent* event) {
 
 void GameWidget::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
+    if (game) {
+        game->ResizeWindow(width(), height());
+    }
     Logger::Log("\033[36m[Qt] GameWidget resized.\033[0m");
 }
 
@@ -88,7 +91,6 @@ void GameWidget::dropEvent(QDropEvent* event) {
 
 void GameWidget::CreateEntityFromAsset(const QString& filePath, int mouseX, int mouseY) {
     if (!game) return;
-
     QFileInfo fileInfo(filePath);
     QString extension = fileInfo.suffix().toLower();
     QString fileName = fileInfo.fileName();
@@ -117,25 +119,21 @@ void GameWidget::CreateEntityFromAsset(const QString& filePath, int mouseX, int 
         Entity newEntity = registry->CreateEntity();
 
         newEntity.Tag(baseName.toStdString());
-
         newEntity.AddComponent<TransformComponent>(
             glm::vec2(worldX, worldY),
             glm::vec2(1.0, 1.0),
             0.0
         );
-
         newEntity.AddComponent<SpriteComponent>(
             assetId,
             texWidth,
             texHeight,
             2
         );
-
         newEntity.AddComponent<BoxColliderComponent>(
             texWidth,
             texHeight
         );
-
         Logger::Log("\033[32m[Qt] Created Entity " + std::to_string(newEntity.GetId()) +
                     " from asset " + assetId + " at (" + std::to_string(worldX) + "," + std::to_string(worldY) + ")\033[0m");
     } else {
