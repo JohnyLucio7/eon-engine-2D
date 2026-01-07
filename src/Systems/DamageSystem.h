@@ -21,7 +21,9 @@ public:
     void OnCollision(CollisionEvent &event) {
         Entity a = event.a;
         Entity b = event.b;
-        Logger::Log("Collision Event emitted: " + std::to_string(a.GetId()) + " and " + std::to_string(b.GetId()));
+
+        // Comentado para evitar poluição de logs
+        // Logger::Log("Collision Event emitted: " + std::to_string(a.GetId()) + " and " + std::to_string(b.GetId()));
 
         if (a.BelongsToGroup("projectiles") && b.HasTag("player")) {
             OnProjectileHitsPlayer(a, b);
@@ -42,7 +44,6 @@ public:
 
     void OnProjectileHitsPlayer(Entity projectile, Entity player) {
         auto projectileComponent = projectile.GetComponent<ProjectileComponent>();
-
         if (!projectileComponent.isFriendly) {
             auto &healthComponent = player.GetComponent<HealthComponent>();
             healthComponent.healthPercentage -= projectileComponent.hitPercentDamage;
@@ -71,6 +72,7 @@ public:
 
     void Update() {
     }
+
 };
 
 #endif /// DAMAGESYSTEM_H

@@ -7,11 +7,9 @@
 #include "../Components/TransformComponent.h"
 #include "../Events/CollisionEvent.h"
 
-class CollisionSystem : public System
-{
+class CollisionSystem : public System {
 public:
-    CollisionSystem()
-    {
+    CollisionSystem() {
         RequireComponent<TransformComponent>();
         RequireComponent<BoxColliderComponent>();
     }
@@ -19,7 +17,6 @@ public:
     void Update(std::unique_ptr<EventBus> &eventBus)
     {
         auto entities = GetSystemEntities();
-
         // Loop all the entities that the system is interested in
         for (auto i = entities.begin(); i != entities.end(); i++)
         {
@@ -31,7 +28,6 @@ public:
             for (auto j = i; j != entities.end(); j++)
             {
                 Entity b = *j;
-
                 // Bypass if we are trying to test same entity
                 if (a == b)
                 {
@@ -54,8 +50,7 @@ public:
 
                 if (collisionHappened)
                 {
-                    Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
-
+                    // Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
                     eventBus->EmitEvent<CollisionEvent>(a, b);
                 }
             }

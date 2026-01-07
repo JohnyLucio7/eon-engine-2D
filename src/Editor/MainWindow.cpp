@@ -1,3 +1,5 @@
+// src/Editor/MainWindow.cpp
+
 #include "MainWindow.h"
 #include "../Logger/Logger.h"
 #include <QStyle>
@@ -129,6 +131,7 @@ void MainWindow::OnAspectRatioChanged(int index) {
     double aspect = aspectRatios[index].second;
 
     resolutionComboBox->clear();
+
     if (aspect == 0.0) {
         resolutionComboBox->addItem("Window Size");
         resolutionComboBox->setEnabled(false);
@@ -209,16 +212,25 @@ void MainWindow::UpdateGameViewLayout() {
         scaleFactor = (double)newWidth / logicalWidth;
     }
 
+    // Aplica o tamanho calculado ao GameWidget
     if (gameWidget->width() != newWidth || gameWidget->height() != newHeight) {
         gameWidget->setFixedSize(newWidth, newHeight);
     }
 
+    // IMPORTANTE: Atualiza a engine com as novas dimensões
     if (gameWidget->GetGame()) {
+        // Primeiro: atualiza o tamanho físico da janela no SDL
         gameWidget->GetGame()->ResizeWindow(newWidth, newHeight);
+
+        // Segundo: aplica a resolução lógica (que internamente fará o letterboxing baseado no novo tamanho)
         gameWidget->GetGame()->SetRenderLogicalSize(logicalWidth, logicalHeight);
     }
 
     scaleLabel->setText(QString("Scale: %1x").arg(scaleFactor, 0, 'f', 2));
+
+    Logger::Log("\033[36m[Qt] Layout Update | Available: " + std::to_string(availableSize.width()) + "x" + std::to_string(availableSize.height()) +
+                " | GameWidget Set To: " + std::to_string(newWidth) + "x" + std::to_string(newHeight) +
+                " | Logical Resolution: " + std::to_string(logicalWidth) + "x" + std::to_string(logicalHeight) + "\033[0m");
 }
 
 void MainWindow::OnPlayClicked() {

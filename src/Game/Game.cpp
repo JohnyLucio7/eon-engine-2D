@@ -65,14 +65,36 @@ void Game::AttachToWindow(void* handle, int width, int height) {
 void Game::ResizeWindow(int width, int height) {
     windowWidth = width;
     windowHeight = height;
+
+    // CORREÇÃO CRÍTICA:
+    // Como estamos usando uma janela embarcada (SDL_CreateWindowFrom), o SDL não
+    // detecta automaticamente que o Widget Qt mudou de tamanho.
+    // Precisamos forçar o SDL a atualizar o tamanho da sua janela interna.
+    if (window) {
+        SDL_SetWindowSize(window, width, height);
+    }
+
+    if (renderer) {
+        SDL_RenderSetViewport(renderer, nullptr);
+
+        // Log para confirmar a correção
+        int w, h;
+        SDL_GetWindowSize(window, &w, &h);
+        Logger::Log("\033[33m[System] Window resized. Qt Input: " + std::to_string(width) + "x" + std::to_string(height) +
+                    " | SDL Internal: " + std::to_string(w) + "x" + std::to_string(h) + "\033[0m");
+    }
 }
 
 void Game::SetRenderLogicalSize(int width, int height) {
     renderWidth = width;
     renderHeight = height;
+
     if (renderer) {
         SDL_RenderSetLogicalSize(renderer, renderWidth, renderHeight);
-        Logger::Log("\033[36m[System] Logical Resolution set to: " + std::to_string(width) + "x" + std::to_string(height) + "\033[0m");
+        SDL_RenderSetViewport(renderer, nullptr);
+        SDL_RenderSetClipRect(renderer, nullptr);
+
+        Logger::Log("\033[36m[System] Logical Resolution applied: " + std::to_string(width) + "x" + std::to_string(height) + "\033[0m");
     }
 }
 
@@ -111,7 +133,7 @@ void Game::Initialize() {
         Logger::Log("\033[36m[System] Standalone SDL Window created successfully.\033[0m");
     }
 
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         Logger::Err("[Error | Class Game | Initialize] - Error Creating SDL renderer!");
         return;
